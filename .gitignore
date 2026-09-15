@@ -1,0 +1,21 @@
+node_modules/
+.next/
+.next.bak*
+out/
+build/
+dist/
+
+.DS_Store
+*.log
+npm-debug.log*
+yarn-error.log*
+
+.env
+.env*.local
+
+next-env.d.ts
+.vercel
+*.tsbuildinfo
+
+# 个人设计笔记，不进仓库（内容与最终实现不一致）
+设计稿.md
