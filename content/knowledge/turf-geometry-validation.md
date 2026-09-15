@@ -1,7 +1,7 @@
 ---
 title: turf 做几何质检的几个边界情况
 domain: GIS
-project: 小鹏地图编辑器
+project: 互联网车企地图编辑器
 date: 2026-09-15
 tags: [turf, 质检]
 ---

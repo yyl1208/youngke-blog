@@ -1,7 +1,7 @@
 ---
 title: 大屏适配：rem 方案的取舍
 domain: 可视化
-project: 泰科质量看板
+project: 某制造厂商质量看板
 date: 2026-09-15
 tags: [echarts, 大屏, 适配]
 ---

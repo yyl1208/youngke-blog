@@ -68,7 +68,7 @@ const hello = '代码块由 Shiki 高亮，明暗主题各自一套配色'
 const KNOWLEDGE_TEMPLATE = (title, date) => `---
 title: ${title}
 domain: GIS
-project: 小鹏地图编辑器
+project: 互联网车企地图编辑器
 date: ${date}
 tags: [踩坑]
 ---

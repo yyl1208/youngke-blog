@@ -103,6 +103,8 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* 移动端点击不高亮，避免整块灰闪 */
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -230,6 +232,138 @@ a {
   bottom: -2px;
   height: 1px;
   background: var(--line-strong);
+}
+
+/* ---------- 移动端菜单按钮 ---------- */
+
+/* 两条横线，展开时旋转成叉 —— 比图标库的三横线更贴这套排版 */
+.menu-btn {
+  display: none;
+  /* 排到最右：汉堡放图标右侧是移动端的通用位置 */
+  order: 1;
+  position: relative;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-sub);
+  color: var(--fg-2);
+  cursor: pointer;
+  transition: color 180ms var(--ease), border-color 180ms var(--ease);
+}
+
+.menu-btn:hover {
+  color: var(--fg);
+  border-color: var(--line-strong);
+}
+
+.menu-bar {
+  position: absolute;
+  left: 7px;
+  right: 7px;
+  height: 1px;
+  background: currentColor;
+  transition: transform 240ms var(--ease);
+}
+
+.menu-bar:nth-child(1) {
+  top: 11px;
+}
+
+.menu-bar:nth-child(2) {
+  top: 15px;
+}
+
+.menu-btn[aria-expanded='true'] .menu-bar:nth-child(1) {
+  transform: translateY(1.5px) rotate(45deg);
+}
+
+.menu-btn[aria-expanded='true'] .menu-bar:nth-child(2) {
+  transform: translateY(-1.5px) rotate(-45deg);
+}
+
+/* ---------- 移动端下拉面板 ---------- */
+
+/* 整屏透明遮罩，点它即关闭。
+   顶栏有 backdrop-filter，fixed 子元素的包含块被收进顶栏盒子里，
+   所以这里用 100vh 撑满而不是 inset: 0。z-index 为负 → 压在面板下面、顶栏背景之上。 */
+.mn-backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: -1;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: default;
+}
+
+/* 基础设为 none：宽屏下即使 open 也不会露出（避免窄屏展开后拉宽窗口的残留） */
+.mobile-nav {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  padding: 0 var(--sp-5) var(--sp-3);
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
+  animation: drop 180ms var(--ease);
+}
+
+[data-theme='dark'] .mobile-nav {
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+}
+
+.mn-link {
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-4) var(--sp-1);
+  border-bottom: 1px solid var(--line);
+  color: var(--fg-2);
+  font-size: var(--fs-sm);
+  transition: color 160ms var(--ease);
+}
+
+.mn-link:last-child {
+  border-bottom: none;
+}
+
+.mn-index {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  color: var(--fg-3);
+  letter-spacing: 0.06em;
+}
+
+.mn-arrow {
+  font-size: var(--fs-xs);
+  color: var(--fg-3);
+  transition: transform 200ms var(--ease);
+}
+
+.mn-link:active .mn-arrow,
+.mn-link:hover .mn-arrow {
+  transform: translateX(2px);
+}
+
+.mn-link.is-active {
+  color: var(--fg);
+  font-weight: 500;
+}
+
+.mn-link.is-active .mn-index,
+.mn-link.is-active .mn-arrow {
+  color: var(--fg);
 }
 
 /* ---------- 搜索 ---------- */
@@ -598,6 +732,65 @@ a {
   color: var(--fg-2);
   line-height: 1.9;
   max-width: 34em;
+}
+
+/* ---------- 列表「展开更多 / 收起」 ---------- */
+
+.reveal-row {
+  display: flex;
+  gap: var(--sp-3);
+  margin-top: var(--sp-3);
+}
+
+.reveal-more {
+  flex: 1;
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius);
+  background: none;
+  color: var(--fg-3);
+  font-family: inherit;
+  font-size: var(--fs-xs);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: color 180ms var(--ease), border-color 180ms var(--ease),
+    background 180ms var(--ease);
+}
+
+.reveal-more:hover {
+  color: var(--fg);
+  background: var(--bg-sub);
+}
+
+.reveal-more.is-collapse {
+  flex: 0 0 auto;
+  border-style: solid;
+  border-color: var(--line);
+}
+
+/* ---------- 章节尾部：总数 + 去全部 ---------- */
+
+.section-more {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin-top: var(--sp-5);
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--line);
+  font-size: var(--fs-xs);
+  color: var(--fg-3);
+}
+
+.section-more a {
+  color: var(--fg-2);
+  border-bottom: 1px solid var(--line);
+  transition: color 180ms var(--ease), border-color 180ms var(--ease);
+}
+
+.section-more a:hover {
+  color: var(--fg);
+  border-bottom-color: var(--line-strong);
 }
 
 /* ---------- 章节引言：一句话交代这节是什么 ---------- */
@@ -1309,6 +1502,19 @@ a {
    窄屏
    ============================================================ */
 
+/* 窄屏：行内导航收进汉堡菜单 */
+@media (max-width: 720px) {
+  .site-nav {
+    display: none;
+  }
+
+  .menu-btn,
+  .mobile-nav,
+  .mn-backdrop {
+    display: block;
+  }
+}
+
 @media (max-width: 640px) {
   .wrap,
   .header-inner {
@@ -1323,20 +1529,21 @@ a {
     --sp-16: 44px;
   }
 
+  .header-inner {
+    gap: var(--sp-3);
+  }
+
+  .header-right {
+    gap: var(--sp-3);
+  }
+
+  /* 搜索框吃掉剩余空间，不再写死宽度 */
   .search {
-    max-width: 110px;
+    max-width: none;
   }
 
   .search-kbd {
     display: none;
-  }
-
-  .site-nav {
-    gap: var(--sp-3);
-  }
-
-  .nav-link {
-    font-size: var(--fs-2xs);
   }
 
   .stats {
@@ -1348,6 +1555,18 @@ a {
     flex-direction: column;
     align-items: flex-start;
     gap: var(--sp-4);
+  }
+
+  /* iOS 上 background-attachment: fixed 会掉帧，滚动时改为随页滚动 */
+  body {
+    background-attachment: scroll;
+  }
+
+  /* 表格在窄屏放不下时自己横向滚，不撑破布局 */
+  .prose table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
   }
 }
 

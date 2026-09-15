@@ -1,7 +1,7 @@
 ---
 title: 无界微前端的通信与样式隔离
 domain: 微前端
-project: 珂阳工作流平台
+project: 半导体公司工作流平台
 date: 2026-09-15
 tags: [微前端, wujie, 架构]
 ---

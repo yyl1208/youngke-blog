@@ -1,11 +1,12 @@
 import Link from 'next/link'
+import RevealList from '@/components/RevealList'
 import { getAllPosts } from '@/lib/posts'
 import { getAllKnowledge } from '@/lib/knowledge'
 import { journey } from '@/lib/journey'
 
 export default function Home() {
-  const posts = getAllPosts().slice(0, 4)
-  const knowledge = getAllKnowledge().slice(0, 4)
+  const posts = getAllPosts()
+  const knowledge = getAllKnowledge()
 
   const entries = [
     {
@@ -61,29 +62,37 @@ export default function Home() {
             里新建一个 .md 就会出现在这里。
           </p>
         ) : (
-          <ul className="item-list">
-            {posts.map((post) => (
-              <li key={post.slug}>
-                <Link href={`/posts/${post.slug}/`} className="card-link">
-                  <div>
-                    <span className="card-title">{post.title}</span>
-                    <div className="card-tags">
-                      {post.tags.map((tag) => (
-                        <span key={tag} className="tag">
-                          {tag}
-                        </span>
-                      ))}
+          <>
+            {/* 全量交给客户端组件切片，默认只露 5 篇，多了才出现「展开更多」 */}
+            <RevealList initial={5} step={5} unit="篇">
+              {posts.map((post) => (
+                <li key={post.slug}>
+                  <Link href={`/posts/${post.slug}/`} className="card-link">
+                    <div>
+                      <span className="card-title">{post.title}</span>
+                      <div className="card-tags">
+                        {post.tags.map((tag) => (
+                          <span key={tag} className="tag">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                  <span className="card-side">
-                    {post.date}
-                    <br />
-                    {post.minutes} 分钟
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+                    <span className="card-side">
+                      {post.date}
+                      <br />
+                      {post.minutes} 分钟
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </RevealList>
+
+            <div className="section-more">
+              <span className="tnum">共 {posts.length} 篇</span>
+              <Link href="/posts/">全部文章 →</Link>
+            </div>
+          </>
         )}
       </section>
 
@@ -98,22 +107,29 @@ export default function Home() {
         {knowledge.length === 0 ? (
           <p className="empty-note">还没有条目。</p>
         ) : (
-          <ul className="item-list">
-            {knowledge.map((k) => (
-              <li key={k.slug}>
-                <Link href={`/knowledge/${k.slug}/`} className="card-link">
-                  <div>
-                    <span className="card-title">{k.title}</span>
-                    <p className="card-desc">
-                      {k.project ? `${k.project} · ` : ''}
-                      {k.domain}
-                    </p>
-                  </div>
-                  <span className="card-side">{k.date}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <>
+            <RevealList initial={4} step={4} unit="条">
+              {knowledge.map((k) => (
+                <li key={k.slug}>
+                  <Link href={`/knowledge/${k.slug}/`} className="card-link">
+                    <div>
+                      <span className="card-title">{k.title}</span>
+                      <p className="card-desc">
+                        {k.project ? `${k.project} · ` : ''}
+                        {k.domain}
+                      </p>
+                    </div>
+                    <span className="card-side">{k.date}</span>
+                  </Link>
+                </li>
+              ))}
+            </RevealList>
+
+            <div className="section-more">
+              <span className="tnum">共 {knowledge.length} 条</span>
+              <Link href="/knowledge/">全部条目 →</Link>
+            </div>
+          </>
         )}
       </section>
 

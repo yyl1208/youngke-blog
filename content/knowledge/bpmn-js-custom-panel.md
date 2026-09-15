@@ -1,7 +1,7 @@
 ---
 title: bpmn-js 自定义属性面板
 domain: 流程引擎
-project: 珂阳工作流平台
+project: 半导体公司工作流平台
 date: 2026-09-15
 tags: [bpmn-js, 流程引擎, 组件]
 ---
