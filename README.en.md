@@ -58,13 +58,14 @@ npm run build            # static output goes to out/
 npm run typecheck        # type check
 ```
 
-One catch when previewing a production build: asset URLs carry a `/youngke-blog` prefix (the repo is served from a GitHub Pages subpath — see Deployment), so serving `out/` directly will 404. Simulate the subpath instead:
+Previewing a production build (the output is fully static — no backend involved):
 
 ```bash
-mkdir -p /tmp/prev && ln -s "$PWD/out" /tmp/prev/youngke-blog
-python3 -m http.server 4173 --directory /tmp/prev
-# → http://localhost:4173/youngke-blog/
+python3 -m http.server 4173 --directory out
+# → http://localhost:4173/
 ```
+
+> Only GitHub Pages deployments carry a `/youngke-blog` prefix on asset URLs (see Deployment). That is the one case where you need to simulate an extra path segment.
 
 ## Writing content
 
@@ -211,13 +212,37 @@ youngke-blog/
 
 ## Deployment
 
-`out/` is plain HTML/CSS/JS — it runs on any static host.
+`out/` is plain HTML/CSS/JS — it runs on any static host. The live site is hosted on **Tencent Cloud EdgeOne Pages** behind a custom domain.
 
-The repo ships with a GitHub Pages workflow (`.github/workflows/deploy.yml`) that deploys on every push to `main`. On first deploy, set **Settings → Pages → Source** to **GitHub Actions**.
+### Primary: EdgeOne Pages + custom domain
 
-The site lives at `https://yyl1208.github.io/youngke-blog/`. Because the repo is not named `yyl1208.github.io`, it sits under a subpath, and `next.config.ts` adds the matching `basePath` for production builds only (never for `next dev`, which would 404 locally).
+Zero cost: 50 GB of traffic per month, unlimited builds, automatic HTTPS certificates, and edge nodes inside mainland China. Connect the GitHub repo once and every push builds and deploys — no manual uploads.
 
-To change the domain or repo name, edit `lib/site.ts` — that's the only place. For a custom domain at the root, drop the `basePath` logic.
+| Setting | Value |
+|---|---|
+| Build command | `npm run build` |
+| Output directory | `out` |
+| Node version | 22 |
+| Environment variable | `SITE_URL=https://your-domain` |
+
+Then add the custom domain in the console and create the CNAME record it asks for.
+
+### Alternative: GitHub Pages
+
+The repo keeps `.github/workflows/deploy.yml`, but it is now **manual-trigger only** (`workflow_dispatch`), so the default site doesn't generate failing runs. Use it for a GitHub Pages mirror; its build automatically adds the `/youngke-blog` subpath prefix. On first use, set **Settings → Pages → Source** to **GitHub Actions**.
+
+### Where the path prefix comes from
+
+One codebase has to serve both a domain root and a GitHub Pages subpath, so `lib/site.ts` carries a single switch:
+
+| Deployment | `basePath` |
+|---|---|
+| Custom domain (default, site at the root) | `''` |
+| GitHub Pages (`DEPLOY_TARGET=github-pages`) | `/youngke-blog` |
+
+The absolute site URL (used by RSS and metadata) comes from the `SITE_URL` environment variable; when unset, the GitHub Pages form falls back to `https://yyl1208.github.io/youngke-blog`.
+
+Changing domains means changing an environment variable or `lib/site.ts` — nothing else.
 
 ## Deliberate trade-offs
 

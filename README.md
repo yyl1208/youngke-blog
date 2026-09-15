@@ -58,13 +58,14 @@ npm run build            # 静态产物输出到 out/
 npm run typecheck        # 类型检查
 ```
 
-预览生产构建要注意：产物里的资源链接带 `/youngke-blog` 前缀（仓库挂在 GitHub Pages 子路径下，见「部署」一节），所以直接 serve `out/` 会 404。模拟子路径即可：
+预览生产构建（产物是纯静态的，不依赖任何后端）：
 
 ```bash
-mkdir -p /tmp/prev && ln -s "$PWD/out" /tmp/prev/youngke-blog
-python3 -m http.server 4173 --directory /tmp/prev
-# → http://localhost:4173/youngke-blog/
+python3 -m http.server 4173 --directory out
+# → http://localhost:4173/
 ```
+
+> 只有部署到 GitHub Pages 子路径时，构建产物才会带上 `/youngke-blog` 前缀（见「部署」一节），那时才需要额外模拟一层路径。
 
 ## 内容发布
 
@@ -211,13 +212,39 @@ youngke-blog/
 
 ## 部署
 
-`out/` 是纯 HTML/CSS/JS，丢到任意静态托管都行。
+`out/` 是纯 HTML/CSS/JS，丢到任意静态托管都行。当前线上跑在**腾讯云 EdgeOne Pages** 上，绑定自有域名。
 
-仓库已带 GitHub Pages 流水线（`.github/workflows/deploy.yml`），推到 `main` 自动发布。首次部署需在 **Settings → Pages → Source** 选 **GitHub Actions**。
+### 主方案：EdgeOne Pages + 自定义域名
 
-站点地址是 `https://yyl1208.github.io/youngke-blog/` —— 仓库名不是 `yyl1208.github.io`，所以站点挂在子路径下，`next.config.ts` 会在生产构建时自动加上 `basePath`（本地 dev 不带，避免开发时 404）。
+零成本：免费版每月 50GB 流量、不限构建次数，自带 HTTPS 证书与国内边缘节点。控制台里连上这个 GitHub 仓库后，每次 push 自动构建发布，不需要任何手动上传。
 
-要改域名或仓库名，只改 `lib/site.ts` 一处；换自定义域名时把 `basePath` 逻辑去掉即可。
+| 配置项 | 值 |
+|---|---|
+| 构建命令 | `npm run build` |
+| 输出目录 | `out` |
+| Node 版本 | 22 |
+| 环境变量 | `SITE_URL=https://你的域名` |
+
+之后在控制台添加自定义域名，按提示在 DNS 加一条 CNAME 记录即可。
+
+### 备用：GitHub Pages
+
+仓库保留了 `.github/workflows/deploy.yml`，但已改为**只能手动触发**（`workflow_dispatch`），避免默认站点不在这里时产生失败记录。用它做 GitHub Pages 备份站点时，构建会自动带上 `/youngke-blog` 子路径前缀。
+
+首次使用需在 **Settings → Pages → Source** 选 **GitHub Actions**。
+
+### 路径前缀是怎么来的
+
+同一份代码要同时适配「域名根目录」和「GitHub Pages 子路径」两种形态，靠 `lib/site.ts` 里的一个开关：
+
+| 部署形态 | `basePath` |
+|---|---|
+| 自定义域名（默认，站点在根目录） | `''` |
+| GitHub Pages（`DEPLOY_TARGET=github-pages`） | `/youngke-blog` |
+
+站点绝对地址（RSS、metadata 用）由 `SITE_URL` 环境变量注入；不设时，GitHub Pages 形态下会自动退回到 `https://yyl1208.github.io/youngke-blog`。
+
+改域名只需要改环境变量或 `lib/site.ts`，不用动其他代码。
 
 ## 已知取舍
 

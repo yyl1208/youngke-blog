@@ -8,7 +8,7 @@ export const site = {
   title: '杨苛 · 用 AI 不断拓展自己的能力边界',
   description:
     '全栈工程师，坐标扬州。前端 7 年，后端 2 年，一直在跟地图和可视化打交道。写做过的东西和踩过的坑。',
-  /** GitHub Pages 的仓库名。仓库改名时必须同步改这里，否则 basePath 会对不上 */
+  /** GitHub 仓库名。若部署到 GitHub Pages，它同时决定子路径前缀 */
   repo: 'youngke-blog',
   owner: 'yyl1208',
   github: 'https://github.com/yyl1208',
@@ -16,9 +16,21 @@ export const site = {
 }
 
 /**
- * 生产构建挂在 https://yyl1208.github.io/youngke-blog/ 这样的子路径下，
- * 所以产物里的资源链接必须带前缀；本地 dev 不能带，否则 404。
+ * 部署形态决定两件事：资源路径前缀、站点绝对地址。
+ *
+ * - **自定义域名**（EdgeOne Pages / 对象存储 + CDN 等，站点落在根目录）→ 不需要前缀，这是默认形态
+ * - **GitHub Pages**（仓库名不是 `<user>.github.io`，站点落在子路径）→ 必须加 `/<repo>` 前缀，
+ *   否则部署后 CSS / JS 全部 404。构建时设 `DEPLOY_TARGET=github-pages` 即可切换
+ *
+ * 不依赖 NODE_ENV，因为两种形态都是生产构建。
  */
-export const basePath = process.env.NODE_ENV === 'production' ? `/${site.repo}` : ''
+const isGithubPages = process.env.DEPLOY_TARGET === 'github-pages'
 
-export const siteUrl = `https://${site.owner}.github.io/${site.repo}`
+export const basePath = isGithubPages ? `/${site.repo}` : ''
+
+/**
+ * 站点绝对地址，RSS、metadata 里的链接都要用它。
+ * 部署时通过环境变量 `SITE_URL` 注入，例如 `SITE_URL=https://yangke.dev`。
+ */
+export const siteUrl =
+  process.env.SITE_URL ?? (isGithubPages ? `https://${site.owner}.github.io/${site.repo}` : '')
