@@ -129,11 +129,7 @@ export default function Home() {
                         ))}
                       </div>
                     </div>
-                    <span className="card-side">
-                      {post.date}
-                      <br />
-                      {post.minutes} 分钟
-                    </span>
+                    <span className="card-side">{post.date}</span>
                   </Link>
                 </li>
               ))}
