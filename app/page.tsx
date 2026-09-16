@@ -3,6 +3,14 @@ import RevealList from '@/components/RevealList'
 import { getAllPosts } from '@/lib/posts'
 import { getAllKnowledge } from '@/lib/knowledge'
 import { journey } from '@/lib/journey'
+import { site } from '@/lib/site'
+
+/** 「现在在做」的流向：手上的东西 → 落到站里哪个地方 */
+const flow = [
+  { from: '项目复盘', to: '文章', href: '/posts/' },
+  { from: '踩坑记录', to: '知识库', href: '/knowledge/' },
+  { from: '能工具化的', to: '开源', href: site.github },
+]
 
 export default function Home() {
   const posts = getAllPosts()
@@ -49,10 +57,52 @@ export default function Home() {
         </p>
       </section>
 
-      {/* ---------- 01 最近写的 ---------- */}
+      {/* ---------- 01 现在在做 ---------- */}
       <section className="section">
         <div className="section-head">
           <span className="section-num">01</span>
+          <span className="section-title">Now</span>
+          <span className="now-badge">
+            <i className="now-dot" aria-hidden="true" />
+            进行中
+          </span>
+          <span className="section-title-zh">现在在做</span>
+        </div>
+
+        <p className="now-line">把手上的工作重新翻一遍，挑出值得留下来的那部分。</p>
+
+        <p className="now-desc">
+          过去几年攒下的项目、踩过的坑、想明白的方案，正在从「做完了」变成「写下来」。
+        </p>
+
+        <div className="now-flow">
+          {flow.map((f) => (
+            <Link
+              key={f.to}
+              href={f.href}
+              className="flow-item"
+              {...(f.href.startsWith('http')
+                ? { target: '_blank', rel: 'noreferrer' }
+                : {})}
+            >
+              <span className="flow-from">{f.from}</span>
+              <span className="flow-to">
+                <span className="flow-arrow" aria-hidden="true">
+                  →
+                </span>
+                {f.to}
+              </span>
+            </Link>
+          ))}
+        </div>
+
+        <p className="now-meta tnum">更新于 2026.09</p>
+      </section>
+
+      {/* ---------- 02 最近写的 ---------- */}
+      <section className="section">
+        <div className="section-head">
+          <span className="section-num">02</span>
           <span className="section-title">Recent Writing</span>
           <span className="section-title-zh">最近写的</span>
         </div>
@@ -97,10 +147,10 @@ export default function Home() {
         )}
       </section>
 
-      {/* ---------- 02 最近记的 ---------- */}
+      {/* ---------- 03 最近记的 ---------- */}
       <section className="section">
         <div className="section-head">
-          <span className="section-num">02</span>
+          <span className="section-num">03</span>
           <span className="section-title">Knowledge Base</span>
           <span className="section-title-zh">最近记的</span>
         </div>
@@ -134,10 +184,10 @@ export default function Home() {
         )}
       </section>
 
-      {/* ---------- 03 经历（简版） ---------- */}
+      {/* ---------- 04 经历（简版） ---------- */}
       <section className="section">
         <div className="section-head">
-          <span className="section-num">03</span>
+          <span className="section-num">04</span>
           <span className="section-title">Experience</span>
           <span className="section-title-zh">走到现在</span>
         </div>
@@ -171,10 +221,10 @@ export default function Home() {
         </ul>
       </section>
 
-      {/* ---------- 04 板块 ---------- */}
+      {/* ---------- 05 板块 ---------- */}
       <section className="section">
         <div className="section-head">
-          <span className="section-num">04</span>
+          <span className="section-num">05</span>
           <span className="section-title">Sections</span>
           <span className="section-title-zh">到处走走</span>
         </div>

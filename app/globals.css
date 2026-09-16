@@ -908,6 +908,119 @@ a {
   max-width: 40em;
 }
 
+/* ---------- 01 现在在做 ---------- */
+
+/* 反相标签：站点里唯一表示「聚焦」的手段，不引入彩色 */
+.now-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  align-self: center;
+  padding: 2px 7px;
+  border-radius: var(--radius);
+  background: var(--inverse-bg);
+  color: var(--inverse-fg);
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.06em;
+}
+
+/* 呼吸的圆点：与 Logo 上的定位节点同一套符号 */
+.now-dot {
+  position: relative;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.now-dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  animation: now-pulse 2.4s var(--ease) infinite;
+}
+
+@keyframes now-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  70%,
+  100% {
+    transform: scale(2.8);
+    opacity: 0;
+  }
+}
+
+.now-line {
+  font-size: var(--fs-md);
+  line-height: 1.8;
+  max-width: 26em;
+}
+
+.now-desc {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-sm);
+  color: var(--fg-2);
+  line-height: 1.9;
+  max-width: 38em;
+}
+
+/* 流向图：横向三格，与下面的纵向列表拉开差异 */
+.now-flow {
+  margin-top: var(--sp-5);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-3);
+}
+
+.flow-item {
+  display: block;
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  transition: border-color 180ms var(--ease), background 180ms var(--ease);
+}
+
+.flow-item:hover {
+  border-color: var(--fg-3);
+  background: var(--bg-sub);
+}
+
+.flow-from {
+  display: block;
+  font-size: var(--fs-sm);
+  color: var(--fg-2);
+}
+
+.flow-to {
+  display: block;
+  margin-top: var(--sp-1);
+  font-size: var(--fs-sm);
+  color: var(--fg);
+}
+
+.flow-arrow {
+  display: inline-block;
+  margin-right: 6px;
+  color: var(--fg-3);
+  font-family: var(--font-mono);
+  transition: transform 180ms var(--ease);
+}
+
+.flow-item:hover .flow-arrow {
+  transform: translateX(3px);
+}
+
+.now-meta {
+  margin-top: var(--sp-4);
+  font-size: var(--fs-2xs);
+  color: var(--fg-3);
+  letter-spacing: 0.06em;
+}
+
 /* 行内链接：只加下划线，不做反相色块（色块要留给真正的聚焦点） */
 .link-inline {
   color: var(--fg);
@@ -1693,6 +1806,11 @@ div.contact-card:hover {
     gap: var(--sp-5);
   }
 
+  /* 三格流向在窄屏改成单列 */
+  .now-flow {
+    grid-template-columns: 1fr;
+  }
+
   .site-footer {
     flex-direction: column;
     align-items: flex-start;
@@ -1721,9 +1839,10 @@ div.contact-card:hover {
     transition-duration: 0.01ms !important;
   }
 
-  /* 光标常亮、栅格不扫：无限循环动画不能靠压缩时长来处理 */
+  /* 光标常亮、栅格不扫、圆点不呼吸：无限循环动画不能靠压缩时长来处理 */
   .logo-caret,
-  .logo-link:hover .logo-grid line {
+  .logo-link:hover .logo-grid line,
+  .now-dot::after {
     animation: none !important;
   }
 }
