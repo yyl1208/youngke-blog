@@ -180,16 +180,120 @@ a {
   gap: var(--sp-5);
 }
 
+/* ---------- Logo：栅格方框 + Y + 定位节点 ---------- */
+
+.logo-link {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
 .logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--fg);
+}
+
+.logo-mark {
+  display: block;
+  overflow: visible;
+}
+
+.logo-frame {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.3;
+}
+
+.logo-grid line {
+  stroke: currentColor;
+  stroke-width: 0.7;
+  opacity: 0.26;
+}
+
+/* 底色重描：把 Y 穿过的栅格线切断 */
+.logo-y-cut {
+  fill: none;
+  stroke: var(--bg);
+  stroke-width: 3.6;
+}
+
+.logo-y {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.logo-node {
+  fill: currentColor;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 220ms var(--ease);
+}
+
+.logo-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
   font-size: var(--fs-sm);
   font-weight: 600;
   letter-spacing: -0.01em;
-  flex-shrink: 0;
   transition: opacity 180ms var(--ease);
 }
 
-.logo:hover {
-  opacity: 0.55;
+/* 末端光标：写作者的身份记号 */
+.logo-caret {
+  display: inline-block;
+  width: 1.5px;
+  height: 0.95em;
+  background: currentColor;
+  animation: logo-blink 1.15s steps(1, end) infinite;
+}
+
+/* hover：栅格横扫（三条错开）+ 节点放大 */
+.logo-link:hover .logo-grid line {
+  animation: logo-scan 880ms var(--ease);
+}
+
+.logo-link:hover .logo-grid line:nth-child(2) {
+  animation-delay: 60ms;
+}
+
+.logo-link:hover .logo-grid line:nth-child(3) {
+  animation-delay: 120ms;
+}
+
+.logo-link:hover .logo-node {
+  transform: scale(1.4);
+}
+
+.logo-link:hover .logo-text {
+  opacity: 0.62;
+}
+
+@keyframes logo-scan {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(2.6px);
+  }
+}
+
+@keyframes logo-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
 }
 
 .header-right {
@@ -1615,5 +1719,11 @@ div.contact-card:hover {
   *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+
+  /* 光标常亮、栅格不扫：无限循环动画不能靠压缩时长来处理 */
+  .logo-caret,
+  .logo-link:hover .logo-grid line {
+    animation: none !important;
   }
 }

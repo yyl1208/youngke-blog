@@ -1,8 +1,9 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import Link from 'next/link'
 import Nav from '@/components/Nav'
 import { GithubIcon } from '@/components/icons'
 import Header from '@/components/Header'
+import Logo from '@/components/Logo'
 import ThemeToggle from '@/components/ThemeToggle'
 import SearchBox, { type SearchItem } from '@/components/SearchBox'
 import { getAllPosts } from '@/lib/posts'
@@ -17,6 +18,14 @@ export const metadata: Metadata = {
   },
   description: site.description,
   authors: [{ name: site.name }],
+}
+
+/** 浏览器 UI（地址栏 / 标签页）配色，跟随系统深浅 */
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' },
+  ],
 }
 
 // 在样式生效前确定主题，避免首屏闪白
@@ -62,8 +71,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <Header>
           <div className="header-inner">
-            <Link href="/" className="logo">
-              youngke
+            <Link href="/" className="logo-link" aria-label={`${site.name} · 首页`}>
+              <Logo />
             </Link>
 
             <SearchBox items={searchItems} />
