@@ -44,6 +44,7 @@ export default function Home() {
 
         <p className="hero-sub">
           全栈工程师，当前坐标扬州。
+          <br />
           正在努力成为一个独立开发者、开源贡献者和技术博主。
         </p>
       </section>

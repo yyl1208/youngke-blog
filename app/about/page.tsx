@@ -1,3 +1,5 @@
+import { site } from '@/lib/site'
+
 export const metadata = {
   title: '关于 · 杨苛',
   description: '杨苛 · 全栈工程师 · 扬州',
@@ -10,9 +12,10 @@ const stacks = [
   { label: 'AI', value: 'Dify · RAG · vibe coding' },
 ]
 
+/** 联系方式统一从 lib/site.ts 读，避免改了站点常量这里还挂着旧地址 */
 const contacts = [
-  { label: 'Email', value: '1115383145@qq.com', href: 'mailto:1115383145@qq.com' },
-  { label: 'GitHub', value: 'github.com', href: 'https://github.com/' },
+  { label: 'Email', value: site.email, href: `mailto:${site.email}` },
+  { label: 'GitHub', value: `github.com/${site.owner}`, href: site.github },
 ]
 
 export default function AboutPage() {
@@ -22,6 +25,7 @@ export default function AboutPage() {
         <h1 className="page-title">关于</h1>
         <p className="page-desc">
           杨苛，全栈工程师，当前坐标扬州。
+          <br />
           正在努力成为一个独立开发者、开源贡献者和技术博主。
         </p>
       </header>
