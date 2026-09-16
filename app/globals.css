@@ -1281,6 +1281,12 @@ a {
   transform: translateY(-2px);
 }
 
+/* 公众号这类没有链接的卡片不该有可点的反馈 */
+div.contact-card:hover {
+  border-color: var(--line);
+  transform: none;
+}
+
 .contact-label {
   font-size: var(--fs-xs);
   color: var(--fg-3);
@@ -1292,39 +1298,6 @@ a {
   color: var(--fg);
   font-family: var(--font-mono);
   word-break: break-all;
-}
-
-/* ---------- 公众号（首页 05 板块） ---------- */
-
-/* 只有一张码，不必撑满整行 —— 宽度贴合内容，否则右边一片空 */
-.wechat {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-5);
-  width: fit-content;
-  max-width: 100%;
-  padding: var(--sp-4);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--bg-sub);
-}
-
-.wechat-qr {
-  flex-shrink: 0;
-  display: block;
-  width: 100px;
-  height: 100px;
-  padding: 4px;
-  border: 1px solid var(--line);
-  border-radius: 3px;
-  /* 二维码必须白底才能扫，两个主题下都强制白色 */
-  background: #fff;
-}
-
-.wechat-name {
-  font-size: var(--fs-md);
-  font-weight: 500;
-  padding-right: var(--sp-3);
 }
 
 /* ============================================================

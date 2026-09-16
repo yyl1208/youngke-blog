@@ -16,6 +16,9 @@ const stacks = [
 const contacts = [
   { label: 'Email', value: site.email, href: `mailto:${site.email}` },
   { label: 'GitHub', value: `github.com/${site.owner}`, href: site.github },
+  { label: 'X', value: site.x.replace(/^https?:\/\//, ''), href: site.x },
+  // 公众号没有可点的链接，href 留空 → 渲染成不可点的卡片
+  { label: '公众号', value: site.wechat, href: '' },
 ]
 
 export default function AboutPage() {
@@ -65,18 +68,25 @@ export default function AboutPage() {
       <section className="about-block">
         <h2>找到我</h2>
         <div className="contact-grid">
-          {contacts.map((c) => (
-            <a
-              key={c.label}
-              className="contact-card"
-              href={c.href}
-              target={c.href.startsWith('http') ? '_blank' : undefined}
-              rel={c.href.startsWith('http') ? 'noreferrer' : undefined}
-            >
-              <span className="contact-label">{c.label}</span>
-              <span className="contact-value">{c.value}</span>
-            </a>
-          ))}
+          {contacts.map((c) =>
+            c.href ? (
+              <a
+                key={c.label}
+                className="contact-card"
+                href={c.href}
+                target={c.href.startsWith('http') ? '_blank' : undefined}
+                rel={c.href.startsWith('http') ? 'noreferrer' : undefined}
+              >
+                <span className="contact-label">{c.label}</span>
+                <span className="contact-value">{c.value}</span>
+              </a>
+            ) : (
+              <div key={c.label} className="contact-card">
+                <span className="contact-label">{c.label}</span>
+                <span className="contact-value">{c.value}</span>
+              </div>
+            ),
+          )}
         </div>
       </section>
     </>

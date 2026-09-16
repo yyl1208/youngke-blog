@@ -13,14 +13,9 @@ export const site = {
   owner: 'yyl1208',
   github: 'https://github.com/yyl1208',
   email: '1115383145@qq.com',
-  /**
-   * 公众号。二维码图片放 public/wechat-qr.png（直接覆盖同名文件即可）。
-   * name 留空则只显示二维码和「公众号」标签，不显示名字行。
-   */
-  wechat: {
-    name: '',
-    qr: '/wechat-qr.png',
-  },
+  x: 'https://x.com/ykgoodbro',
+  /** 公众号名，只显示文字，不放二维码 */
+  wechat: '苛谈',
 }
 
 /**

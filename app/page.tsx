@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import RevealList from '@/components/RevealList'
-import WechatPromo from '@/components/WechatPromo'
 import { getAllPosts } from '@/lib/posts'
 import { getAllKnowledge } from '@/lib/knowledge'
 import { journey } from '@/lib/journey'
@@ -191,17 +190,6 @@ export default function Home() {
             </Link>
           ))}
         </div>
-      </section>
-
-      {/* ---------- 05 公众号 ---------- */}
-      <section className="section">
-        <div className="section-head">
-          <span className="section-num">05</span>
-          <span className="section-title">WeChat</span>
-          <span className="section-title-zh">公众号</span>
-        </div>
-
-        <WechatPromo />
       </section>
     </>
   )
