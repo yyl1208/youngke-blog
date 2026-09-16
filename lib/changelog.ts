@@ -20,6 +20,14 @@ export type ChangeEntry = {
 export const changelog: ChangeEntry[] = [
   {
     date: '2026-09-16',
+    title: '新增两篇文章',
+    items: [
+      '《用 AI 写小说那些事儿》：长篇创作里怎么让 AI 记住前面的设定，附一套工作流和一个开源 skill',
+      '《用AI写的一款H5打飞机小游戏》：边做边记，持续更新',
+    ],
+  },
+  {
+    date: '2026-09-16',
     title: '首页加了「现在在做」',
     items: [
       '新增 01 板块：记录当前正在推进的事 —— 把过去攒下的项目、踩坑和方案，整理成能对外输出的东西',
