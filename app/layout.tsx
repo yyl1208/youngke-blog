@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Nav from '@/components/Nav'
 import { GithubIcon } from '@/components/icons'
 import Header from '@/components/Header'
+import GridHover from '@/components/GridHover'
 import Logo from '@/components/Logo'
 import ThemeToggle from '@/components/ThemeToggle'
 import SearchBox, { type SearchItem } from '@/components/SearchBox'
@@ -69,6 +70,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>
+        {/* 背景网格的鼠标跟随，只在有鼠标的设备上启用 */}
+        <GridHover />
+
         <Header>
           <div className="header-inner">
             <Link href="/" className="logo-link" aria-label={`${site.name} · 首页`}>

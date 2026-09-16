@@ -30,6 +30,8 @@
   --grid: #f1f1f1;
   --grid-size: 40px;
   --grid-img: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M40 0H0v40' fill='none' stroke='%23f1f1f1' stroke-width='.5'/%3E%3C/svg%3E");
+  /* 鼠标跟随用的加深版网格，与 --grid 同尺寸，两层严格重合 */
+  --grid-strong: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M40 0H0v40' fill='none' stroke='%23d5d5d5' stroke-width='.5'/%3E%3C/svg%3E");
 
   /* 反相令牌：聚焦用，不是装饰 */
   --inverse-bg: #000000;
@@ -81,6 +83,7 @@
 
   --grid: #171717;
   --grid-img: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M40 0H0v40' fill='none' stroke='%23171717' stroke-width='.5'/%3E%3C/svg%3E");
+  --grid-strong: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M40 0H0v40' fill='none' stroke='%233a3a3a' stroke-width='.5'/%3E%3C/svg%3E");
 
   --inverse-bg: #ffffff;
   --inverse-fg: #000000;
@@ -663,7 +666,38 @@ a {
    Layout
    ============================================================ */
 
+/* ---------- 背景网格的鼠标跟随 ---------- */
+
+/* 一层被圆形遮罩裁出来的深色网格，盖在 body 背景那层之上、内容之下。
+   坐标由 components/GridHover.tsx 写进 --mx / --my。 */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: var(--grid-strong);
+  background-size: var(--grid-size) var(--grid-size);
+  -webkit-mask-image: radial-gradient(
+    circle 190px at var(--mx, -999px) var(--my, -999px),
+    #000 0%,
+    rgba(0, 0, 0, 0.45) 48%,
+    transparent 72%
+  );
+  mask-image: radial-gradient(
+    circle 190px at var(--mx, -999px) var(--my, -999px),
+    #000 0%,
+    rgba(0, 0, 0, 0.45) 48%,
+    transparent 72%
+  );
+  opacity: var(--grid-glow, 0);
+  transition: opacity 700ms var(--ease);
+}
+
 .wrap {
+  /* relative + z-index：把内容抬到网格光晕那层之上（顶栏是 sticky + z-index 50，不受影响） */
+  position: relative;
+  z-index: 1;
   max-width: var(--measure);
   margin: 0 auto;
   padding: 0 var(--sp-6);
