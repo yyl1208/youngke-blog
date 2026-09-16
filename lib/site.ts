@@ -13,6 +13,15 @@ export const site = {
   owner: 'yyl1208',
   github: 'https://github.com/yyl1208',
   email: '1115383145@qq.com',
+  /**
+   * 公众号。二维码图片放 public/wechat-qr.png（直接覆盖同名文件即可）。
+   * name 留空则只显示推荐语、不显示名字行。
+   */
+  wechat: {
+    name: '',
+    desc: '写前端、可视化和 AI 落地，偶尔聊聊独立开发。扫码关注，更新第一时间推给你。',
+    qr: '/wechat-qr.png',
+  },
 }
 
 /**

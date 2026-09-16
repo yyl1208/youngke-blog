@@ -199,6 +199,7 @@ youngke-blog/
 │   ├── Nav.tsx              # active-link highlighting
 │   ├── SearchBox.tsx        # ⌘K search panel
 │   ├── ThemeToggle.tsx      # theme switch (sun/moon cross-fade)
+│   ├── WechatPromo.tsx      # WeChat official-account promo (card / inline bar)
 │   └── icons.tsx            # GitHub icon (lucide 1.x dropped brand icons)
 ├── content/
 │   ├── posts/               # post sources
@@ -208,7 +209,9 @@ youngke-blog/
 │   ├── knowledge.ts         # knowledge base grouping by domain
 │   ├── journey.ts           # résumé data
 │   ├── changelog.ts         # site change log (data source for /changelog)
-│   └── site.ts              # site constants (domain / repo name / contact)
+│   └── site.ts              # site constants (domain / repo name / contact / WeChat)
+├── public/
+│   └── wechat-qr.png        # WeChat QR code (replace with your own image)
 └── scripts/new.mjs          # dependency-free content scaffold
 ```
 

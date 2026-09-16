@@ -20,6 +20,15 @@ export type ChangeEntry = {
 export const changelog: ChangeEntry[] = [
   {
     date: '2026-09-16',
+    title: '加了公众号入口',
+    items: [
+      '「关于」页底部增加公众号卡片，「找到我」里多一个能扫的地方',
+      '文章详情页正文结束处增加一条窄条推荐，不打断阅读',
+      '二维码放 public/wechat-qr.png，文案在 lib/site.ts 的 site.wechat',
+    ],
+  },
+  {
+    date: '2026-09-16',
     title: '改了自我描述',
     items: [
       '首页 hero 与「关于」页的自我描述统一为「全栈工程师，当前坐标扬州。正在努力成为一个独立开发者、开源贡献者和技术博主。」',

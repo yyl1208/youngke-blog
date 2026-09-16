@@ -197,6 +197,7 @@ youngke-blog/
 │   ├── Nav.tsx              # 导航高亮
 │   ├── SearchBox.tsx        # ⌘K 搜索面板
 │   ├── ThemeToggle.tsx      # 主题切换（日月图标交叉过渡）
+│   ├── WechatPromo.tsx      # 公众号推荐位（关于页卡片 / 文章底部窄条）
 │   └── icons.tsx            # GitHub 图标（lucide 1.x 已移除品牌图标）
 ├── content/
 │   ├── posts/               # 文章源文件
