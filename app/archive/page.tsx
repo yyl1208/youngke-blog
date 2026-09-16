@@ -1,8 +1,9 @@
 import Link from 'next/link'
 import { getAllTags, getPostsGroupedByYear } from '@/lib/posts'
+import { site } from '@/lib/site'
 
 export const metadata = {
-  title: '归档 · 杨咏亮',
+  title: `归档 · ${site.name}`,
 }
 
 export default function Archive() {

@@ -140,6 +140,7 @@ git push
 | `/journey` | 经历 | `lib/journey.ts`，手写结构化数据 |
 | `/archive` | 归档 | 按年份 + 标签两个维度索引全部文章 |
 | `/about` | 关于 | `app/about/page.tsx` 内联 |
+| `/changelog` | 更新日志 | `lib/changelog.ts`，手写；入口只在页脚 |
 | `/rss.xml` | RSS | 构建时生成 |
 
 ## 设计规范
@@ -204,6 +205,7 @@ youngke-blog/
 │   ├── posts.ts             # Markdown 读取 + 渲染
 │   ├── knowledge.ts         # 知识库按领域分组
 │   ├── journey.ts           # 经历数据
+│   ├── changelog.ts         # 站点改动记录（/changelog 页的数据源）
 │   └── site.ts              # 站点常量（域名 / 仓库名 / 联系方式）
 └── scripts/new.mjs          # 零依赖内容脚手架
 ```

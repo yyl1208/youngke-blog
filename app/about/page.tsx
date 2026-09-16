@@ -21,7 +21,8 @@ export default function AboutPage() {
       <header className="page-head">
         <h1 className="page-title">关于</h1>
         <p className="page-desc">
-          杨苛，全栈工程师，坐标扬州。前端 7 年，后端 2 年，主要在跟地图和可视化打交道。
+          杨苛，全栈工程师，当前坐标扬州。
+          正在努力成为一个独立开发者、开源贡献者和技术博主。
         </p>
       </header>
 

@@ -7,7 +7,7 @@ export const site = {
   name: '杨苛',
   title: '杨苛 · 用 AI 不断拓展自己的能力边界',
   description:
-    '全栈工程师，坐标扬州。前端 7 年，后端 2 年，一直在跟地图和可视化打交道。写做过的东西和踩过的坑。',
+    '全栈工程师，当前坐标扬州。正在努力成为一个独立开发者、开源贡献者和技术博主。',
   /** GitHub 仓库名。若部署到 GitHub Pages，它同时决定子路径前缀 */
   repo: 'youngke-blog',
   owner: 'yyl1208',

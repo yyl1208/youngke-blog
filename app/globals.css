@@ -1007,6 +1007,38 @@ a {
   white-space: nowrap;
 }
 
+/* ---------- 更新日志：日期 + 标题 + 若干条改动 ---------- */
+
+.change-title {
+  font-weight: 500;
+}
+
+.change-items {
+  list-style: none;
+  margin-top: var(--sp-3);
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.change-items li {
+  position: relative;
+  padding-left: var(--sp-5);
+  font-size: var(--fs-sm);
+  color: var(--fg-2);
+  line-height: 1.8;
+}
+
+/* 短横线做条目标记，保持黑白排版里的克制 */
+.change-items li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.85em;
+  width: 8px;
+  height: 1px;
+  background: var(--line-strong);
+}
+
 @media (max-width: 640px) {
   .row-link {
     grid-template-columns: 1fr;

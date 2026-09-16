@@ -142,6 +142,7 @@ Pushing to `main` triggers GitHub Actions, which builds and deploys automaticall
 | `/journey` | Journey | `lib/journey.ts`, hand-maintained structured data |
 | `/archive` | Archive | Every post indexed by year and by tag |
 | `/about` | About | Inline in `app/about/page.tsx` |
+| `/changelog` | Changelog | `lib/changelog.ts`, hand-maintained; linked from the footer only |
 | `/rss.xml` | RSS | Generated at build time |
 
 ## Design notes
@@ -206,6 +207,7 @@ youngke-blog/
 │   ├── posts.ts             # Markdown reading + rendering
 │   ├── knowledge.ts         # knowledge base grouping by domain
 │   ├── journey.ts           # résumé data
+│   ├── changelog.ts         # site change log (data source for /changelog)
 │   └── site.ts              # site constants (domain / repo name / contact)
 └── scripts/new.mjs          # dependency-free content scaffold
 ```
