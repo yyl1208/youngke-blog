@@ -65,8 +65,6 @@ python3 -m http.server 4173 --directory out
 # → http://localhost:4173/
 ```
 
-> 只有部署到 GitHub Pages 子路径时，构建产物才会带上 `/youngke-blog` 前缀（见「部署」一节），那时才需要额外模拟一层路径。
-
 ## 内容发布
 
 **核心原则：Git 仓库就是唯一数据源。**
@@ -212,14 +210,9 @@ youngke-blog/
 
 ## 部署
 
-`out/` 是纯 HTML/CSS/JS，任意静态托管都行。部署形态由 `lib/site.ts` 里的一个开关决定：
+`out/` 是纯 HTML/CSS/JS，任意静态托管都行。完整操作见 [部署教程.md](./部署教程.md)。
 
-| 形态 | 环境变量 | `basePath` |
-|---|---|---|
-| 自定义域名（默认） | 不设 | `''` |
-| GitHub Pages 子路径 | `DEPLOY_TARGET=github-pages` | `/youngke-blog` |
-
-站点绝对地址（RSS、metadata 用）通过 `SITE_URL` 注入。改域名只动这两个变量。
+站点绝对地址（RSS、metadata 用）通过环境变量 `SITE_URL` 注入，例如 `SITE_URL=https://yourdomain.com`。改域名只动这一个变量。
 
 ## 已知取舍
 

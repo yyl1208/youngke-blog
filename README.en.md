@@ -212,14 +212,9 @@ youngke-blog/
 
 ## Deployment
 
-`out/` is plain HTML/CSS/JS — it runs on any static host. The deployment shape is decided by one switch in `lib/site.ts`:
+`out/` is plain HTML/CSS/JS — it runs on any static host. Full walkthrough: [部署教程.md](./部署教程.md).
 
-| Shape | Env var | `basePath` |
-|---|---|---|
-| Custom domain (default) | — | `''` |
-| GitHub Pages subpath | `DEPLOY_TARGET=github-pages` | `/youngke-blog` |
-
-The absolute site URL (used by RSS and metadata) is injected via `SITE_URL`. Changing domains touches nothing but those two variables.
+The absolute site URL (used by RSS and metadata) is injected via the `SITE_URL` environment variable, e.g. `SITE_URL=https://yourdomain.com`. Changing domains touches nothing but that one variable.
 
 ## Deliberate trade-offs
 
