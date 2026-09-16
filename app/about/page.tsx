@@ -1,5 +1,4 @@
 import { site } from '@/lib/site'
-import WechatPromo from '@/components/WechatPromo'
 
 export const metadata = {
   title: '关于 · 杨苛',
@@ -78,10 +77,6 @@ export default function AboutPage() {
               <span className="contact-value">{c.value}</span>
             </a>
           ))}
-        </div>
-
-        <div style={{ marginTop: 'var(--sp-6)' }}>
-          <WechatPromo variant="card" />
         </div>
       </section>
     </>

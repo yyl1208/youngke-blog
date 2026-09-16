@@ -1294,33 +1294,26 @@ a {
   word-break: break-all;
 }
 
-/* ---------- 公众号推荐位 ---------- */
+/* ---------- 公众号（首页 05 板块） ---------- */
 
+/* 只有一张码，不必撑满整行 —— 宽度贴合内容，否则右边一片空 */
 .wechat {
   display: flex;
   align-items: center;
   gap: var(--sp-5);
+  width: fit-content;
+  max-width: 100%;
+  padding: var(--sp-4);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--bg-sub);
 }
 
-.wechat-bar {
-  margin-top: var(--sp-12);
-  padding: var(--sp-5);
-}
-
-.wechat-card {
-  padding: var(--sp-6);
-  gap: var(--sp-6);
-  align-items: flex-start;
-}
-
 .wechat-qr {
   flex-shrink: 0;
   display: block;
-  width: 84px;
-  height: 84px;
+  width: 100px;
+  height: 100px;
   padding: 4px;
   border: 1px solid var(--line);
   border-radius: 3px;
@@ -1328,41 +1321,10 @@ a {
   background: #fff;
 }
 
-.wechat-card .wechat-qr {
-  width: 132px;
-  height: 132px;
-}
-
-.wechat-label {
-  font-size: var(--fs-xs);
-  color: var(--fg-3);
-  letter-spacing: 0.06em;
-}
-
 .wechat-name {
-  margin-top: var(--sp-2);
   font-size: var(--fs-md);
   font-weight: 500;
-}
-
-.wechat-desc {
-  margin-top: var(--sp-2);
-  font-size: var(--fs-sm);
-  color: var(--fg-body);
-  line-height: 1.8;
-}
-
-@media (max-width: 640px) {
-  .wechat-bar {
-    gap: var(--sp-4);
-    padding: var(--sp-4);
-  }
-
-  .wechat-qr,
-  .wechat-card .wechat-qr {
-    width: 68px;
-    height: 68px;
-  }
+  padding-right: var(--sp-3);
 }
 
 /* ============================================================

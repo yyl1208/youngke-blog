@@ -199,7 +199,7 @@ youngke-blog/
 │   ├── Nav.tsx              # active-link highlighting
 │   ├── SearchBox.tsx        # ⌘K search panel
 │   ├── ThemeToggle.tsx      # theme switch (sun/moon cross-fade)
-│   ├── WechatPromo.tsx      # WeChat official-account promo (card / inline bar)
+│   ├── WechatPromo.tsx      # WeChat official-account QR code (home section 05)
 │   └── icons.tsx            # GitHub icon (lucide 1.x dropped brand icons)
 ├── content/
 │   ├── posts/               # post sources

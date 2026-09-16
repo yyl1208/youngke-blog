@@ -20,11 +20,10 @@ export type ChangeEntry = {
 export const changelog: ChangeEntry[] = [
   {
     date: '2026-09-16',
-    title: '加了公众号入口',
+    title: '首页加了公众号',
     items: [
-      '「关于」页底部增加公众号卡片，「找到我」里多一个能扫的地方',
-      '文章详情页正文结束处增加一条窄条推荐，不打断阅读',
-      '二维码放 public/wechat-qr.png，文案在 lib/site.ts 的 site.wechat',
+      '首页末尾新增 05 板块，放公众号二维码，不放推荐语',
+      '二维码放 public/wechat-qr.png，公众号名在 lib/site.ts 的 site.wechat.name',
     ],
   },
   {
