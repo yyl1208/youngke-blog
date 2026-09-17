@@ -27,7 +27,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       <header className="article-head">
         <h1 className="article-title">{post.title}</h1>
         <div className="article-meta tnum">
-          {post.date} · {post.minutes} 分钟
+          {post.date}
           {post.tags.length > 0 && <span> · {post.tags.map((t) => `#${t}`).join(' ')}</span>}
         </div>
       </header>

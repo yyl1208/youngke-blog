@@ -18,7 +18,6 @@ export interface PostMeta {
   tags: string[]
   summary: string
   words: number
-  minutes: number
 }
 
 export interface Post extends PostMeta {
@@ -49,11 +48,6 @@ function countWords(md: string): number {
   return cn + en
 }
 
-/** 中英文混排阅读速度取 300 字/分钟 */
-function toMinutes(words: number): number {
-  return Math.max(1, Math.ceil(words / 300))
-}
-
 /**
  * 读取所有文章元数据（同步，不渲染正文）。
  * content/posts/ 目录下的每个 .md 就是一篇，没有例外、没有隐藏状态。
@@ -76,7 +70,6 @@ export function getAllPosts(): PostMeta[] {
       tags: normalizeTags(data.tags),
       summary: (data.summary as string) ?? '',
       words,
-      minutes: toMinutes(words),
     }
   })
 
@@ -111,7 +104,6 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
     tags: normalizeTags(data.tags),
     summary: (data.summary as string) ?? '',
     words,
-    minutes: toMinutes(words),
     html: String(file),
   }
 }

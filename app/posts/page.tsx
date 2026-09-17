@@ -35,7 +35,6 @@ export default function PostsPage() {
                     {post.date.slice(5).replace('-', '/')}
                   </span>
                   <span className="row-title">{post.title}</span>
-                  <span className="row-side tnum">{post.minutes} 分钟</span>
                 </Link>
               </li>
             ))}

@@ -38,7 +38,7 @@ export default function Archive() {
                 <Link href={`/posts/${post.slug}/`} className="post-link">
                   <span className="post-title">{post.title}</span>
                   <span className="post-meta tnum">
-                    {post.date} · {post.minutes} 分钟
+                    {post.date}
                   </span>
                 </Link>
               </li>

@@ -1228,7 +1228,7 @@ body::before {
 
 .row-link {
   display: grid;
-  grid-template-columns: 76px 1fr auto;
+  grid-template-columns: 76px 1fr;
   align-items: baseline;
   gap: var(--sp-4);
   padding: var(--sp-4) var(--sp-2);
