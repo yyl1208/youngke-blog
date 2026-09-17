@@ -19,6 +19,14 @@ export type ChangeEntry = {
 
 export const changelog: ChangeEntry[] = [
   {
+    date: '2026-09-17',
+    title: '新增一篇：用 AI 推公众号文章的两年',
+    items: [
+      '《用 WorkBuddy 自动推动公众号文章》：从 2020 年开号停更，到用 AI 接手后第一篇阅读量个位数、换流程后到几百的全过程',
+      '文内附两篇实发文章的跳转链接：油价破百（第一版流程）、V2G 充放电差价（换 skill 之后）',
+    ],
+  },
+  {
     date: '2026-09-16',
     title: '新增两篇文章',
     items: [
