@@ -6,6 +6,7 @@ summary: 用 AI 从零写一个雷电风格弹幕射击小游戏，14 轮迭代�
 ---
 
 > 在线试玩：<https://thunder-strike.app.workbuddy.host/>（网页版，拖动操控、自动开火、轻点清屏）
+> 源码：<https://github.com/yyl1208/ai-dump/tree/main/thunder-strike>
 
 这份文档里的每一条都是真踩过的，不是理论推导。
 
@@ -703,9 +704,20 @@ CONFIG.player.autoBombSave = 0   // 每局代劳上限，0 = 不代劳，设 1 �
 
 和 AI 一起做游戏，**你的角色不是"写代码的人"，而是"定义什么是对的的人"**。
 
-AI 生成速度为带来的最大风险，不是代码质量差，而是：
+AI 生成速度带来的最大风险，不是代码质量差，而是：
 代码产出的速度远远超过了你验证它的速度，
 于是系统里会积累一堆"看起来在工作、实际在自转"的东西——
 静默失效的规则、从不响的断言、用更高数字补偿着的 bug。
 
 所以这套流程的全部重心只有一个：**想办法让"错了"这件事尽快响。**
+
+---
+
+## 附：源码与在线试玩
+
+- 在线试玩：<https://thunder-strike.app.workbuddy.host/>
+- 源码：<https://github.com/yyl1208/ai-dump/tree/main/thunder-strike>
+
+代码在仓库的 `thunder-strike/` 目录下，里面 `tools/` 那几个脚本
+（`smoke.js` / `smoke-wx.js` / `stability.js` / `mutate.js`）就是这套验证流程跑起来的地方。
+整个项目零依赖，`index.html` 用浏览器打开就能玩，不需要装任何东西。
