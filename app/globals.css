@@ -1002,87 +1002,74 @@ body::before {
   max-width: 38em;
 }
 
-/* ---------- 正在做的三条主线：按时间往下记 ---------- */
-.now-tracks {
+/* ---------- 现在在做的事 ----------
+   首页只露几行入口（标题 + 一句话），具体内容点进 /now/<id> 才看 */
+.now-list {
   margin-top: var(--sp-8);
-  display: grid;
-  gap: var(--sp-5);
-}
-
-.np-item {
-  padding-top: var(--sp-5);
+  list-style: none;
   border-top: 1px solid var(--line);
 }
 
-.np-item:first-child {
-  border-top: 1px solid var(--line-strong);
+.np-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: var(--sp-5);
+  padding: var(--sp-4) var(--sp-2);
+  border-bottom: 1px solid var(--line);
+  transition: background 180ms var(--ease), padding-left 180ms var(--ease);
 }
 
-.np-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--sp-1) var(--sp-4);
+.np-row:hover {
+  background: var(--bg-hover);
+  padding-left: var(--sp-3);
+}
+
+.np-main {
+  display: block;
+  min-width: 0;
 }
 
 .np-title {
-  font-size: var(--fs-base);
+  display: block;
+  font-size: 15px;
   font-weight: 500;
   letter-spacing: -0.01em;
+  color: var(--fg);
 }
 
-.np-period {
+/* 副标题：md frontmatter 里的 note，没写就不渲染 */
+.np-note {
+  display: block;
+  margin-top: var(--sp-1);
   font-size: var(--fs-xs);
   color: var(--fg-3);
+  line-height: 1.7;
 }
 
-.np-desc {
-  margin-top: var(--sp-2);
-  font-size: var(--fs-sm);
-  color: var(--fg-2);
-  line-height: 1.9;
-  max-width: 38em;
-}
-
-.np-list {
-  margin-top: var(--sp-4);
-  list-style: none;
-  display: grid;
-  gap: var(--sp-2);
-}
-
-.np-entry {
-  display: grid;
-  grid-template-columns: auto auto 1fr;
+.np-meta {
+  display: flex;
   align-items: baseline;
   gap: var(--sp-3);
-  font-size: var(--fs-sm);
-  line-height: 1.7;
-  color: var(--fg-3);
-}
-
-.np-entry.is-done {
-  color: var(--fg-body);
-}
-
-/* 已发生的是实心点，计划中的是空心点 */
-.np-dot {
-  width: 7px;
-  height: 7px;
-  border: 1px solid var(--fg-3);
-  border-radius: 50%;
-  transform: translateY(-1px);
-}
-
-.np-entry.is-done .np-dot {
-  background: var(--fg);
-  border-color: var(--fg);
-}
-
-.np-date {
   font-size: var(--fs-xs);
   color: var(--fg-3);
+  white-space: nowrap;
+}
+
+.np-arrow {
+  color: var(--fg-2);
+  transition: transform 180ms var(--ease);
+}
+
+.np-row:hover .np-arrow {
+  transform: translateX(3px);
+}
+
+@media (max-width: 640px) {
+  .np-row {
+    grid-template-columns: 1fr;
+    gap: var(--sp-2);
+  }
 }
 
 /* 流向图：横向三格，与下面的纵向列表拉开差异 */
@@ -1213,6 +1200,46 @@ body::before {
     grid-template-columns: 1fr;
     gap: var(--sp-1);
   }
+}
+
+/* ---------- 主线详情页 /now/<id> ---------- */
+
+.now-crumb {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-6);
+  font-size: var(--fs-xs);
+  color: var(--fg-3);
+}
+
+.now-crumb-link {
+  color: var(--fg-3);
+  transition: color 180ms var(--ease);
+}
+
+.now-crumb-link:hover {
+  color: var(--fg);
+}
+
+.now-crumb-sep {
+  color: var(--fg-3);
+  opacity: 0.6;
+}
+
+.now-others {
+  margin-top: var(--sp-16);
+}
+
+.now-others-title {
+  margin-bottom: var(--sp-2);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--fg-2);
+}
+
+.now-others .now-list {
+  margin-top: 0;
 }
 
 /* ============================================================

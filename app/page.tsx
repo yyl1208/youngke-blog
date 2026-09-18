@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import RevealList from '@/components/RevealList'
-import NowTracks from '@/components/NowTracks'
+import NowList from '@/components/NowList'
 import { getAllPosts } from '@/lib/posts'
 import { getAllKnowledge } from '@/lib/knowledge'
 import { journey } from '@/lib/journey'
@@ -76,8 +76,8 @@ export default function Home() {
           过去几年攒下的项目、踩过的坑、想明白的方案，正在从「做完了」变成「写下来」。
         </p>
 
-        {/* 三条主线：内容在 lib/now.ts，纯记录，不统计进度 */}
-        <NowTracks />
+        {/* 现在在做的事：一件一个 md，放 content/now/，不显示进度 */}
+        <NowList />
 
         <div className="now-flow">
           {flow.map((f) => (

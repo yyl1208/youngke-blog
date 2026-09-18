@@ -1,65 +1,99 @@
+import fs from 'node:fs'
+import path from 'node:path'
+import matter from 'gray-matter'
+import { unified } from 'unified'
+import remarkParse from 'remark-parse'
+import remarkGfm from 'remark-gfm'
+import remarkRehype from 'remark-rehype'
+import rehypeSlug from 'rehype-slug'
+import rehypeShiki from '@shikijs/rehype'
+import rehypeStringify from 'rehype-stringify'
+
 /**
- * 「现在在做」的三条主线 —— 改这里就能更新首页 Now 区块。
+ * 「现在在做的事」—— 内容全在 content/now/ 目录里，一个文件一件事。
  *
- * 这是**记录**，不是进度条：往下追加 `{ date, text }` 就是记一条，
- * 不统计百分比、不显示完成度。想区分「已经发生」和「打算做」，
- * 给那条加 `done: false`，页面上会画成空心点。
+ * ── 加一件事 ────────────────────────────────────────
+ *   在 content/now/ 下新建一个 .md 文件，文件名就是网址（/now/<文件名>），
+ *   所以文件名只用小写字母、数字、连字符，比如 deepseek-harness.md。
  *
- * 口径沿用 journey.ts：不写真名，公司用行业代称。
+ * ── 文件长这样 ──────────────────────────────────────
+ *   ---
+ *   title: 研究 DeepSeek Harness      # 首页显示的那一行
+ *   note: 上下文怎么组装、工具怎么调度。 # 首页标题下的小字，可省略
+ *   order: 1                          # 首页排序，小的在前，可省略
+ *   ---
+ *
+ *   正文用 Markdown 随便写，点进详情页看到的就是它。
+ *
+ * ── 删/改 ───────────────────────────────────────────
+ *   删掉文件就没了；改文件内容，首页和详情页一起变。
+ *
+ * 这里不维护任何状态：没有进度、没有完成度、没有已完成/未完成之分。
  */
 
-export interface NowEntry {
-  /** 记录时间，写 '2026.09' 或 '2026-09-12' 都行，原样展示 */
-  date: string
-  text: string
-  /** 默认已发生（实心点）；false 表示还没落地（空心点） */
-  done?: boolean
-}
+const NOW_DIR = path.join(process.cwd(), 'content', 'now')
 
-export interface NowTrack {
+export interface NowMeta {
+  /** URL slug，就是 md 文件名 */
   id: string
   title: string
-  /** 形如 '2026.09 — 进行中' */
-  period: string
-  desc: string
-  entries: NowEntry[]
+  /** 首页标题下的小字 */
+  note: string
+  /** 首页排序，小的在前 */
+  order: number
 }
 
-export const nowTracks: NowTrack[] = [
-  {
-    id: 'deepseek-harness',
-    title: '研究 DeepSeek Harness',
-    period: '2026.09 — 进行中',
-    desc: '把 DeepSeek 的 agent harness 拆开看：上下文怎么组装、工具怎么调度、长任务怎么收敛。',
-    entries: [
-      { date: '2026.09', text: '通读官方 agent 示例与工具调用协议' },
-      { date: '2026.09', text: '跑通一个最小可运行的 harness' },
-      { date: '2026.10', text: '拆出可复用的上下文组装与工具调度层', done: false },
-      { date: '2026.10', text: '接到自己的 agent 编排上跑长任务', done: false },
-    ],
-  },
-  {
-    id: 'micro-frontend-workflow',
-    title: '微前端 + 生产工作流架构设计抽离',
-    period: '2026.08 — 进行中',
-    desc: '把做工作流平台时的微前端脚手架和流程设计器重新抽一遍，去掉业务绑定，留一套能复用的骨架。',
-    entries: [
-      { date: '2026.08', text: '翻旧代码，圈出可抽离的模块' },
-      { date: '2026.09', text: '沙箱与通信层抽出来，脱离业务跑通' },
-      { date: '2026.09', text: '流程设计器组件化，去掉业务耦合', done: false },
-      { date: '2026.10', text: '补架构说明，开源出去', done: false },
-    ],
-  },
-  {
-    id: 'job-hunting',
-    title: '找工作',
-    period: '2026.02 — 进行中',
-    desc: '2 月离职，脱产找全栈 / AI Agent 方向的岗位，目标 9—10 月落定。',
-    entries: [
-      { date: '2026.02', text: '离职，进入脱产求职' },
-      { date: '2026.08', text: '简历与项目材料梳理完' },
-      { date: '2026.09', text: '集中投递与面试', done: false },
-      { date: '2026.10', text: '拿到 offer', done: false },
-    ],
-  },
-]
+export interface NowItem extends NowMeta {
+  /** 正文渲染后的 HTML */
+  html: string
+}
+
+function toMeta(id: string, data: Record<string, unknown>): NowMeta {
+  return {
+    id,
+    title: (data.title as string) ?? id,
+    note: (data.note as string) ?? '',
+    order: typeof data.order === 'number' ? data.order : 999,
+  }
+}
+
+/** 读取全部（只解析 frontmatter，不渲染正文）—— 首页用这个 */
+export function getAllNow(): NowMeta[] {
+  if (!fs.existsSync(NOW_DIR)) return []
+
+  const files = fs.readdirSync(NOW_DIR).filter((f) => f.endsWith('.md'))
+
+  const items = files.map((filename) => {
+    const id = filename.replace(/\.md$/, '')
+    const raw = fs.readFileSync(path.join(NOW_DIR, filename), 'utf-8')
+    const { data } = matter(raw)
+    return toMeta(id, data)
+  })
+
+  return items.sort((a, b) =>
+    a.order !== b.order ? a.order - b.order : a.id.localeCompare(b.id)
+  )
+}
+
+/** 读取单件（含渲染后的正文）—— 详情页用这个 */
+export async function getNowById(id: string): Promise<NowItem | null> {
+  const filepath = path.join(NOW_DIR, `${id}.md`)
+  if (!fs.existsSync(filepath)) return null
+
+  const raw = fs.readFileSync(filepath, 'utf-8')
+  const { data, content } = matter(raw)
+
+  const file = await unified()
+    .use(remarkParse)
+    .use(remarkGfm)
+    .use(remarkRehype, { allowDangerousHtml: true })
+    .use(rehypeSlug)
+    .use(rehypeShiki, {
+      themes: { light: 'github-light', dark: 'github-dark-default' },
+      defaultColor: false,
+    })
+    .use(rehypeStringify, { allowDangerousHtml: true })
+    .process(content)
+
+  return { ...toMeta(id, data), html: String(file) }
+}
