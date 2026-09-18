@@ -1002,9 +1002,92 @@ body::before {
   max-width: 38em;
 }
 
+/* ---------- 正在做的三条主线：按时间往下记 ---------- */
+.now-tracks {
+  margin-top: var(--sp-8);
+  display: grid;
+  gap: var(--sp-5);
+}
+
+.np-item {
+  padding-top: var(--sp-5);
+  border-top: 1px solid var(--line);
+}
+
+.np-item:first-child {
+  border-top: 1px solid var(--line-strong);
+}
+
+.np-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-1) var(--sp-4);
+}
+
+.np-title {
+  font-size: var(--fs-base);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.np-period {
+  font-size: var(--fs-xs);
+  color: var(--fg-3);
+}
+
+.np-desc {
+  margin-top: var(--sp-2);
+  font-size: var(--fs-sm);
+  color: var(--fg-2);
+  line-height: 1.9;
+  max-width: 38em;
+}
+
+.np-list {
+  margin-top: var(--sp-4);
+  list-style: none;
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.np-entry {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: baseline;
+  gap: var(--sp-3);
+  font-size: var(--fs-sm);
+  line-height: 1.7;
+  color: var(--fg-3);
+}
+
+.np-entry.is-done {
+  color: var(--fg-body);
+}
+
+/* 已发生的是实心点，计划中的是空心点 */
+.np-dot {
+  width: 7px;
+  height: 7px;
+  border: 1px solid var(--fg-3);
+  border-radius: 50%;
+  transform: translateY(-1px);
+}
+
+.np-entry.is-done .np-dot {
+  background: var(--fg);
+  border-color: var(--fg);
+}
+
+.np-date {
+  font-size: var(--fs-xs);
+  color: var(--fg-3);
+}
+
 /* 流向图：横向三格，与下面的纵向列表拉开差异 */
 .now-flow {
-  margin-top: var(--sp-5);
+  margin-top: var(--sp-8);
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--sp-3);
