@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getAllNow, getNowById } from '@/lib/now'
+import ClosingQuote from '@/components/ClosingQuote'
 
 /**
  * 一件正在做的事：/now/<id>
@@ -48,6 +49,8 @@ export default async function NowItemPage({ params }: { params: Promise<{ id: st
       </header>
 
       <div className="prose" dangerouslySetInnerHTML={{ __html: item.html }} />
+
+      <ClosingQuote slug={item.id} />
 
       {others.length > 0 && (
         <section className="now-others">

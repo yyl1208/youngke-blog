@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getAllKnowledge, getKnowledgeBySlug } from '@/lib/knowledge'
+import ClosingQuote from '@/components/ClosingQuote'
 
 export function generateStaticParams() {
   return getAllKnowledge().map((k) => ({ slug: k.slug }))
@@ -42,6 +43,8 @@ export default async function KnowledgeDetailPage({
       </header>
 
       <div className="prose" dangerouslySetInnerHTML={{ __html: k.html }} />
+
+      <ClosingQuote slug={k.slug} />
 
       <Link href="/knowledge" className="back-link">
         ← 返回知识库
