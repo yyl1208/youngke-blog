@@ -1990,3 +1990,23 @@ div.contact-card:hover {
     animation: none !important;
   }
 }
+
+/* 正文末尾的一句话：文案在 content/quotes.md，一行一条，组件只负责挑一条渲染 */
+.closing-quote {
+  margin-top: var(--sp-12);
+  padding-left: var(--sp-5);
+  border-left: 2px solid var(--line);
+}
+
+.cq-text {
+  margin: 0;
+  color: var(--fg-2);
+  font-size: 0.9375rem;
+  line-height: 1.75;
+}
+
+.cq-author {
+  margin-top: var(--sp-2);
+  color: var(--fg-3);
+  font-size: 0.8125rem;
+}

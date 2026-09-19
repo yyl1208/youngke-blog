@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getAllPosts, getPostBySlug } from '@/lib/posts'
+import ClosingQuote from '@/components/ClosingQuote'
 
 export function generateStaticParams() {
   return getAllPosts().map((post) => ({ slug: post.slug }))
@@ -33,6 +34,8 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       </header>
 
       <div className="prose" dangerouslySetInnerHTML={{ __html: post.html }} />
+
+      <ClosingQuote slug={post.slug} />
 
       <div style={{ marginTop: 'var(--sp-12)' }}>
         <Link href="/" className="back-link">
