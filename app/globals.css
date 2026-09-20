@@ -1757,18 +1757,28 @@ div.contact-card:hover {
 }
 
 .prose h2 {
-  font-size: var(--fs-md);
-  font-weight: 500;
-  margin-top: var(--sp-12);
-  line-height: 1.5;
+  font-size: 21px;
+  font-weight: 600;
+  margin-top: 56px;
+  line-height: 1.45;
   color: var(--fg);
 }
 
 .prose h3 {
-  font-size: var(--fs-base);
-  font-weight: 500;
+  font-size: 17px;
+  font-weight: 600;
   margin-top: var(--sp-8);
   color: var(--fg);
+  /* 左边一道竖线：h3 原来跟正文同字号，光靠字重压不住加粗 */
+  border-left: 3px solid var(--fg);
+  padding-left: 10px;
+  line-height: 1.5;
+}
+
+/* 加粗原来是浏览器默认的 700，比标题还重，压到 600 让层级回到标题这边 */
+.prose strong,
+.prose b {
+  font-weight: 600;
 }
 
 .prose ul,
