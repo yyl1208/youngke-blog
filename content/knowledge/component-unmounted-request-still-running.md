@@ -102,62 +102,131 @@ axios 0.22 起 `CancelToken` 进 deprecated，官方推荐 `AbortController`。
 
 三个都能修，但都得显式处理——这也是"把取消收在请求层"的代价：一处写错，全局遭殃。
 
-### Vue 3 和 React 各自的解法
+## vue项目中所有onMounted内调用的异步都需要考虑取消吗
 
-按粒度从粗到细排一层：
+表格在`mounted`异步拉接口**非常普遍**，但这里有一个经典坑：**接口还没返回，组件已经销毁（快速切页），then 回调执行，尝试给表格赋值，Vue 报警告：`Uncaught (in promise) ... attempt to set reactive variable on an unmounted component`**
 
-| 粒度 | Vue 3 | React |
-| --- | --- | --- |
-| 框架 / 库接管 | `useFetch` / `useAsyncData`（自带去重取消） | react-router 的 loader，或 React Query 这类数据请求库 |
-| 请求层统一 | axios 拦截器 + `router.beforeEach` + 豁免名单 | axios 拦截器照样能用，但路由侧没有钩子，得自己找地方调 |
-| 组件级 | `onWatcherCleanup`、`onUnmounted`、`onScopeDispose` | `useEffect` 的返回值 |
+>
+> 不是说接口必须 “掐断请求”，而是**要防止组件卸载后，回调继续更新组件状态**。两种思路：
+>
+>
+> 1. 使用`AbortController`：直接中断网络请求（推荐）
+> 2. 加一个`isUnmounted`标记：就算请求回来，也不执行赋值（简单兜底方案）
 
-**位置越靠上越该交给框架，越往下越是兜底。**
+### 场景：表格 mounted 拉取数据
 
-Vue 3 里最精准的位置是 watch 自带的清理钩子：`onWatcherCleanup(() => controller.abort())`（3.5+，
-只能在回调的同步阶段调，`await` 之后再调就失效）。它只取消同一个 watch 触发的前一次请求，
-粒度比拦截器里的 key 去重更准，也不会误伤并发。组件级用 `onUnmounted`，把请求收进 composable 时用 `onScopeDispose`。
-
-React 侧首选交给数据请求库，内部就管着取消和竞态。
-路由层有 react-router v6.4+：它自己持有 `pendingNavigationController`，每次导航先 abort 上一次还在飞的，
-signal 注入 loader 收到的 `request` 上——跟 `beforeEach` 里遍历 cancel 是同一个位置，只是它替你写了。两个前提缺一不可：
+Vue2 选项式示例
 
 ```js
-// 前提一：loader 得把 signal 传下去，否则 router 只 abort 了自己那一层
-export async function loader({ request }) {
-  return searchCities(new URL(request.url).searchParams.get('q'), { signal: request.signal })
+export default {
+  data() {
+    return {
+      tableData: [],
+      isUnmounted: false
+    }
+  },
+  mounted() {
+    this.fetchTableData()
+  },
+  methods: {
+    async fetchTableData() {
+      const res = await api.getTableList()
+      // ✅ 兜底判断：组件已经卸载，不赋值
+      if (this.isUnmounted) return
+      this.tableData = res.data
+    }
+  },
+  beforeDestroy() {
+    this.isUnmounted = true
+  }
 }
 ```
 
-前提二是它只管 route 的 loader / action，组件里自己 `fetch` 的请求管不着。
-Next.js 的 App Router 更彻底：没有客户端路由守卫，`middleware` 跑在服务端，管不到浏览器里已经发出去的请求。
+### 方案 2：AbortController（更好，直接终止请求，节省带宽）
 
-组件级就是面试官问的那层，两个细节决定能不能用：
-
-```tsx
-useEffect(() => {
-  const controller = new AbortController()
-  fetch(`/api/list?id=${id}`, { signal: controller.signal })
-    .then((r) => r.json())
-    .then(setList)
-    .catch((err) => { if (err.name === 'AbortError') return; setError(err) })
-    .finally(() => { if (!controller.signal.aborted) setLoading(false) })
-  return () => controller.abort()
-}, [id])
+```js
+export default {
+  data() {
+    return {
+      tableData: [],
+      abortCtrl: null
+    }
+  },
+  mounted() {
+    this.abortCtrl = new AbortController()
+    this.fetchTableData()
+  },
+  methods: {
+    async fetchTableData() {
+      try {
+        const res = await api.getTableList({
+          signal: this.abortCtrl.signal
+        })
+        this.tableData = res.data
+      } catch(err) {
+        // abort 会触发异常，需要区分是手动取消还是业务报错
+        if(err.name !== 'AbortError'){
+          // 真实接口错误处理
+        }
+      }
+    }
+  },
+  beforeDestroy() {
+    this.abortCtrl?.abort()
+  }
+}
 ```
 
-- catch 里必须判取消，不判的话每次依赖变化都飘一条未处理的 rejection。
-- finally 里的 loading 要看 `aborted`，取消时通常已有新请求在跑，这时候关 loading 会闪。
+Vue3 Composition 写法（更清爽）
 
-还有个常见写法是标志位（`let cancelled = false`），它只丢结果、不取消请求：能挡住竞态，
-但请求本身还在飞，带宽照耗，后端照算。**标志位是"结果对但资源浪费"，abort 才是"连请求一起停"。**
+```js
+import { onMounted, onUnmounted, ref } from 'vue'
+const tableData = ref([])
+let controller = null
 
-StrictMode 会把 effect 跑两遍，第一个请求立刻被 abort，DevTools 里那条 canceled 是预期行为——
-但它会放大"catch 里没判 AbortError"的后果，本地一刷新就报错，很容易误判。
+onMounted(async () => {
+  controller = new AbortController()
+  try {
+    const res = await api.getTableList({ signal: controller.signal })
+    tableData.value = res.data
+  } catch(err) {
+    if (err.name !== 'AbortError') {
+      // 业务错误
+    }
+  }
+})
 
-两边共同的边界：**取消的只是浏览器这一侧，服务端仍然会把那些请求处理完。**
-前端取消解决的是"旧数据别盖新数据"，不是"后端别算了"。
-路线差异也就清楚了——不是 React 比 Vue 强，是**谁掌握请求的生命周期，谁才取消得动**。
+onUnmounted(() => {
+  controller?.abort()
+})
+```
+
+## 两个方案对比
+
+表格
+
+| 方案 | 优点 | 缺点 |
+| --- | --- | --- |
+| `isUnmounted`标记 | 改造简单，老项目低成本；不需要改造 axios/api 封装 | **网络请求还会继续跑完**，只是不赋值；占用后端、带宽 |
+| AbortController | 直接中断请求，网络停止，性能更好；没有无效回调 | 需要 api 支持 signal，要处理 AbortError 捕获 |
+
+## 业务取舍（真实开发怎么选）
+
+1. **后台管理系统，大量表格、快速切换标签页** → 优先 AbortController，快速切页面大量 pending 请求堆积，容易造成请求排队、接口并发爆炸。
+2. **简单小页面、页面切换不频繁** → `isUnmounted`标记兜底足够，开发成本低。
+
+## 面试延伸考点（经常追问）
+
+>
+> 问：只用 isUnmounted 标记，算不算内存泄漏？
+> 答：
+
+- 从 Vue 组件角度：**不会触发组件状态更新报错**
+- 但是网络请求本身依然在后台完成，Promise 依然 resolve，请求占用资源。请求回调的闭包依然短暂持有组件作用域引用，**短期问题不大，高频快速切换页面会累积请求压力**。
+
+>
+> 问：表格请求，有没有完全不用处理的场景？
+> 答：页面**加载完之前不会被销毁**（弹窗，不支持快速路由跳转），这种简单场景可以省略。但后台系统多标签快速切换是高危场景，建议统一兜底。
 
 ### 如果再被问一次
 
@@ -167,6 +236,7 @@ StrictMode 会把 effect 跑两遍，第一个请求立刻被 abort，DevTools �
 > 但组件级只是最细的一层。Vue 3 要么用 `useFetch`，要么在 axios 拦截器 + 路由守卫里统一 cancel，
 > 业务代码不用感知，还要留豁免名单给登出、埋点这类不能被取消的请求；
 > React 侧要么交给 react-router 的 loader（前提是 signal 传下去），要么交给数据请求库。
+> TanStack Query解决方案
 
 ### 什么时候别搞这套
 
@@ -175,5 +245,3 @@ StrictMode 会把 effect 跑两遍，第一个请求立刻被 abort，DevTools �
 - 有轮询或长连接——取消逻辑得和轮询的生命周期对齐。反过来，主流程有取消机制的话，轮询必须在豁免名单里。
 
 判断标准就一句：**旧响应晚到，用户能不能看出来。**
-
-

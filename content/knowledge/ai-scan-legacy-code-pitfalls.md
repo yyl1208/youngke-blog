@@ -12,44 +12,72 @@ tags: [AI, 代码审查, 定时器, 内存泄漏]
 
 代码不一定是我写的，但是相关问题我当时可能也遇到过，值得记录下来
 
-
-
-以下是问题内容 
+以下是问题内容
 
 ## 总结
 
 ### 坑一：定时器的清理清单，难在"清单"
 
 大屏是 7x24 挂着的。如果运行越久越卡，或者控制台开始不停输出error，往往是内存泄漏这类问题了
- 
+
 **五六个定时器**。页面切走之后没清掉，就会继续持有已销毁实例的引用，回调里还在 `this.xxx = data`、还在 `dispatchAction`。
 
 单个定时器谁都会清，**难的是"清单"**——只要有任意一个没被写进清理函数，整个 `beforeDestroy` 就白写。
 同一个项目里能找到四种漏法：
 
+#### 漏法一：引用置空，没有 clear
+
 ```ts
 // 漏法一：只把引用置空，没有 clear
+
+// 创建定时器，浏览器后台开启循环
+this.timer = setInterval(() => {
+  console.log('执行')
+}, 1000)
+
 beforeDestroy() {
   this.timer = null          // setInterval 还在跑，只是拿不到了
 }
+```
 
-// 漏法二：setInterval 的返回值根本没接住
-let flag = infoFn()
-if (flag) {
-  setInterval(infoFn, 10 * 1000)      // 没有赋值给 this.rotation.timer
+> 你只是把 `this.timer` 变量里存的 ID 删掉了，**浏览器那边的定时器线程还在继续跑**，每隔一秒继续执行回调。
+> 最坑的：**ID 丢了，再也无法 clearInterval 停止它，造成内存泄漏！**
+
+正确写法：
+
+```js
+beforeDestroy() {
+  // 先判断存在，再清除定时器
+  if (this.timer) {
+    clearInterval(this.timer)
+    this.timer = null // 可选，置空释放引用
+  }
 }
-// ...于是 beforeDestroy 里的 clearInterval(this.rotation.timer) 永远清的是 null
+```
+原理简单理解
 
-// 漏法三：清理函数漏字段
+- 浏览器：维护一张全局定时器表，`setInterval` 注册任务，返回 ID；
+- `this.timer`：只是 JS 对象上存 ID 的一个普通变量；
+- `clearInterval(Id)`：**拿着 ID 去通知浏览器全局表删掉这个定时任务**；
+- `this.timer = null`：仅仅修改 JS 变量，**不会通知浏览器**。
+
+#### 漏法二：cleanTimer 遗漏清理
+
+```ts
+// 漏法二：cleanTimer 遗漏清理
 cleanTimer() {
   if (this.timer) clearTimeout(this.timer)
   if (this.errorTimer) clearTimeout(this.errorTimer)
   if (this.cloudTimer) clearTimeout(this.cloudTimer)
-  // riskAnimationTimer 不在这份清单里，但它确实存在、确实在被赋值
 }
 
-// 漏法四：匿名定时器，压根没变量可清
-setTimeout(() => { this.riskList = left.splice(0, 5) }, 10)
+// 漏法三：各种匿名的异步操作
+let flag = infoFn()
+if (flag) {
+  setInterval(infoFn, 10 * 1000)      // 没有赋值给 this.rotation.timer
+}
+
+setTimeout(() => { this.list = left.splice(0, 5) }, 10)
 ```
 
 项目里也有写对了的样板可以对照：一个是清理函数覆盖全部定时器字段；
@@ -147,53 +175,6 @@ async initData() {
 
 **当年为什么没发现**：成功的路径一直是对的，失败的路径从来没被测过。
 
-### 坑三：动态 require 把整个 assets 目录拖进构建
-
-大屏项目图片多：`src/assets` 一共 22MB，单张背景图就有 1.3MB、616KB、472KB。
-为了按名称动态取图，项目里有五处动态 `require`：
-
-```ts
-// 最宽的一处：上下文 = src/assets 整棵目录
-getImg(imgUrl: string) {
-  return imgUrl.indexOf("http") > -1 ? imgUrl : require(`@/assets/${imgUrl}`)
-}
-
-// 稍窄一点：上下文锁在某个子目录
-return require(`@/assets/assetCenter/${name}.png`)
-```
-
-webpack 遇到 `require(表达式)` 时无法静态分析，会给**前缀目录**生成一个 context module（默认递归、按后缀匹配），
-把该目录下所有文件都纳入构建图。也就是说：最宽的那一处让 `src/assets` 下的**所有图片**都进了产物，
-而它实际只会用到其中几张图标。
-
-把"动态"换成"静态枚举"，让 webpack 能静态分析：
-
-```ts
-// 改法一：显式静态导入 + 映射表（推荐，能享受 tree-shaking 和拼写检查）
-import iconBlue1 from '@/assets/operate/icon/blue_icon1.png'
-const ICON_MAP: Record<string, string> = { 'blue_1': iconBlue1, /* ... */ }
-getImg(item: any) {
-  return ICON_MAP[`${item.riskState ? 'red' : 'blue'}_${item.terminalType === '其他' ? '2' : '1'}`]
-}
-
-// 改法二：确实要批量时，用 require.context 明确限定目录和正则
-const ctx = require.context('@/assets/operate/icon', false, /\.png$/)
-```
-
-三个连带后果：
-
-1. **路径写错只在运行时炸。** 静态 `import` 拼错是**编译期**报错；动态 `require` 拼错是**运行时** `Cannot find module`，而且只在真的滚到那个分支时才炸——大屏挂着没人操作，可能几天后才发现。
-2. **小图会被内联成 base64 塞进 JS。** 一旦整个目录成了 context module，目录里所有小图标都会被内联进同一个 chunk，体积悄悄涨上去，看 bundle 分析时这些字符串分散各处、不容易归因。
-3. **换客户交付时会带走别家的图。** 这个项目是一套代码多客户交付（`build:iot` / `build:fanpu` / `build:yy`），
-   而最宽的那处覆盖整个 `src/assets`，等于每个客户的产物里都带着其它客户的背景图和 logo。
-
-**ps：这里应该是当时多租户取图方式的设计思路不一样**——动机是让取图这件事可配置，手段用错了。
-关键区分在于**运行时多租户**和**构建期多客户**是两回事：
-如果是运行时多租户（一套部署服务多个租户，取图地址从配置里来），动态 require 满足不了——webpack 在构建期就要确定上下文，运行时的字符串它管不着；
-而实际交付方式是构建期多客户（每个客户单独 build），那"运行时切换"的能力根本用不上，配置化用环境变量 + 静态映射就够了。
-
-**当年为什么没发现**：产物能跑、图能显示，没人量过产物里到底塞了多少张图。
-
 ---
 
 总结：
@@ -208,8 +189,8 @@ const ctx = require.context('@/assets/operate/icon', false, /\.png$/)
 
 但是输出博客这种意向化的产物如果想要自己满意，还需要喂很多东西，让他学习
 
-或许以后Vibe Coding AI不会犯这些错误，但是当我们遇到这些错误时，自己还需要有基本的判断能力
+或许以后Vibe Coding AI也不会犯这些错误，但是当我们遇到这些错误时，自己还需要有基本的判断能力
 
-利用AI生成代码，节省自己的时间，但是也得去理解他实现的逻辑，不然如何判断AI对错 
+利用AI生成代码，也得去理解他实现的逻辑，不然如何判断AI对错
 
 又或许...也可以让另一个AI去判断、审核呢...
