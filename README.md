@@ -11,7 +11,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-000000?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![License](https://img.shields.io/badge/license-MIT-000000?style=flat-square)](./LICENSE)
 
-[在线预览](https://yyl1208.github.io/youngke-blog/) · [English](./README.en.md)
+[在线预览](https://www.youngke.cn/) · [English](./README.en.md)
 
 </div>
 
@@ -28,7 +28,7 @@
 
 ## 特性
 
-- **纯静态** —— `next build` 产出 17 个 HTML 文件，丢到任何静态托管都能跑，没有任何运行时后端。
+- **纯静态** —— `next build` 把每个路由都预渲染成 HTML，丢到任何静态托管都能跑，没有任何运行时后端。页面数随内容增长，不需要手改配置。
 - **内容即文件** —— 发一篇文章 = 提交一个 `.md`。没有 CMS、没有草稿状态、没有隐藏字段，文件在就在，不在就不在。
 - **黑白双主题** —— 没有彩色强调色。色彩张力归零后，视觉层次全靠排版：反相色块做聚焦、字号音阶做落差、灰阶做三级文字层次。
 - **站内搜索** —— `⌘K` 唤起，索引在构建时生成并随页面下发，浏览器端零依赖、零请求。
@@ -72,8 +72,11 @@ python3 -m http.server 4173 --directory out
 ```
 content/
 ├── posts/        文章，一篇一个文件，文件名即 URL
-└── knowledge/    知识条目，按领域分组展示
+├── knowledge/    知识条目，按领域分组展示
+└── now/          「现在在做的事」，一个文件一件事
 ```
+
+**三个目录都支持子目录归类**：`content/knowledge/Java/redis.md` → `/knowledge/Java/redis/`，用来把同类内容收在一起，URL 也跟着分层。平铺的文件不受影响，旧链接不变。
 
 三种发文方式，按场景选：
 
@@ -127,7 +130,9 @@ git commit -m "post: 新文章标题"
 git push
 ```
 
-推到 `main` 后 GitHub Actions 自动构建并发布。
+推到 `main` 后由托管平台自动构建发布（仓库里有 `vercel.json`）。
+
+GitHub Pages 是**手动触发的备份**：`.github/workflows/deploy.yml` 用的是 `workflow_dispatch`，需要去 Actions 页面手动点一次，不会随 push 自动跑。
 
 ## 站点结构
 
@@ -141,6 +146,7 @@ git push
 | `/archive` | 归档 | 按年份 + 标签两个维度索引全部文章 |
 | `/about` | 关于 | `app/about/page.tsx` 内联 |
 | `/changelog` | 更新日志 | `lib/changelog.ts`，手写；入口只在页脚 |
+| `/now` | 现在在做的事 | `content/now/`，一个文件一件事 |
 | `/rss.xml` | RSS | 构建时生成 |
 
 ## 设计规范
@@ -185,11 +191,13 @@ youngke-blog/
 │   ├── page.tsx             # 主页
 │   ├── layout.tsx           # 顶栏 / 页脚 / 防闪烁主题脚本
 │   ├── template.tsx         # 路由切换进场动画
-│   ├── posts/               # 文章列表 + 详情
-│   ├── knowledge/           # 知识库列表 + 详情
+│   ├── posts/               # 文章列表 + 详情（catch-all 路由，支持子目录）
+│   ├── knowledge/           # 知识库列表 + 详情（同上）
 │   ├── journey/             # 经历（时间线）
 │   ├── archive/             # 归档
 │   ├── about/               # 关于
+│   ├── changelog/           # 更新日志
+│   ├── now/                 # 现在在做的事（列表 + 详情）
 │   ├── rss.xml/route.ts     # 构建时生成 RSS
 │   └── globals.css          # 全部样式，设计令牌都在这里
 ├── components/
@@ -197,13 +205,19 @@ youngke-blog/
 │   ├── Nav.tsx              # 导航高亮
 │   ├── SearchBox.tsx        # ⌘K 搜索面板
 │   ├── ThemeToggle.tsx      # 主题切换（日月图标交叉过渡）
+│   ├── ClosingQuote.tsx     # 文末警句（客户端随机，刷新换一句）
 │   └── icons.tsx            # GitHub 图标（lucide 1.x 已移除品牌图标）
 ├── content/
 │   ├── posts/               # 文章源文件
-│   └── knowledge/           # 知识条目源文件
+│   ├── knowledge/           # 知识条目源文件（可按领域建子目录）
+│   ├── now/                 # 「现在在做的事」源文件
+│   └── quotes.md            # 文末警句库，一行一条
 ├── lib/
 │   ├── posts.ts             # Markdown 读取 + 渲染
 │   ├── knowledge.ts         # 知识库按领域分组
+│   ├── now.ts               # 「现在在做的事」读取
+│   ├── md-walk.ts           # 递归收集 .md（子目录归类的底层）
+│   ├── quotes.ts            # 警句库读取与发牌
 │   ├── journey.ts           # 经历数据
 │   ├── changelog.ts         # 站点改动记录（/changelog 页的数据源）
 │   └── site.ts              # 站点常量（域名 / 仓库名 / 联系方式）
