@@ -34,6 +34,7 @@
 - **站内搜索** —— `⌘K` 唤起，索引在构建时生成并随页面下发，浏览器端零依赖、零请求。
 - **代码高亮在构建时完成** —— Shiki 把代码染色成静态 HTML，明暗主题各一套配色。浏览器不下载任何高亮脚本。
 - **RSS** —— `/rss.xml` 同样是构建产物。
+- **文末警句** —— 每条内容末尾一句话，统一由 `content/quotes.md` 管（一行一条，加一句不用动任何文章）。按内容序号发牌，**同一篇永远是同一句**：随机会让纯静态产物每次构建都不一样，客户端随机也会和构建出来的 HTML 对不上。
 - **零 Web Font** —— 中文 Web Font 动辄几 MB，是博客最大的性能杀手，直接不用；改用系统字体栈 + `letter-spacing` / `line-height` 调校。
 
 ## 技术栈
@@ -205,7 +206,7 @@ youngke-blog/
 │   ├── Nav.tsx              # 导航高亮
 │   ├── SearchBox.tsx        # ⌘K 搜索面板
 │   ├── ThemeToggle.tsx      # 主题切换（日月图标交叉过渡）
-│   ├── ClosingQuote.tsx     # 文末警句（客户端随机，刷新换一句）
+│   ├── ClosingQuote.tsx     # 文末警句（服务端组件，按内容 slug 稳定取一句）
 │   └── icons.tsx            # GitHub 图标（lucide 1.x 已移除品牌图标）
 ├── content/
 │   ├── posts/               # 文章源文件
