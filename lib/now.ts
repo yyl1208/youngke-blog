@@ -8,6 +8,7 @@ import remarkRehype from 'remark-rehype'
 import rehypeSlug from 'rehype-slug'
 import rehypeShiki from '@shikijs/rehype'
 import rehypeStringify from 'rehype-stringify'
+import { collectMdFiles } from './md-walk'
 
 /**
  * 「现在在做的事」—— 内容全在 content/now/ 目录里，一个文件一件事。
@@ -15,6 +16,7 @@ import rehypeStringify from 'rehype-stringify'
  * ── 加一件事 ────────────────────────────────────────
  *   在 content/now/ 下新建一个 .md 文件，文件名就是网址（/now/<文件名>），
  *   所以文件名只用小写字母、数字、连字符，比如 deepseek-harness.md。
+ *   也可以放子目录归类（job/hunting.md → /now/job/hunting/）。
  *
  * ── 文件长这样 ──────────────────────────────────────
  *   ---
@@ -57,15 +59,12 @@ function toMeta(id: string, data: Record<string, unknown>): NowMeta {
   }
 }
 
-/** 读取全部（只解析 frontmatter，不渲染正文）—— 首页用这个 */
+/** 读取全部（只解析 frontmatter，不渲染正文）—— 首页用这个。递归收集，子目录体现在 id 里 */
 export function getAllNow(): NowMeta[] {
   if (!fs.existsSync(NOW_DIR)) return []
 
-  const files = fs.readdirSync(NOW_DIR).filter((f) => f.endsWith('.md'))
-
-  const items = files.map((filename) => {
-    const id = filename.replace(/\.md$/, '')
-    const raw = fs.readFileSync(path.join(NOW_DIR, filename), 'utf-8')
+  const items = collectMdFiles(NOW_DIR).map(({ slug: id, filepath }) => {
+    const raw = fs.readFileSync(filepath, 'utf-8')
     const { data } = matter(raw)
     return toMeta(id, data)
   })
@@ -75,8 +74,9 @@ export function getAllNow(): NowMeta[] {
   )
 }
 
-/** 读取单件（含渲染后的正文）—— 详情页用这个 */
+/** 读取单件（含渲染后的正文）—— 详情页用这个。id 可含斜杠 */
 export async function getNowById(id: string): Promise<NowItem | null> {
+  if (id.includes('..')) return null
   const filepath = path.join(NOW_DIR, `${id}.md`)
   if (!fs.existsSync(filepath)) return null
 

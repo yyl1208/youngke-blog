@@ -8,6 +8,7 @@ import remarkRehype from 'remark-rehype'
 import rehypeSlug from 'rehype-slug'
 import rehypeShiki from '@shikijs/rehype'
 import rehypeStringify from 'rehype-stringify'
+import { collectMdFiles } from './md-walk'
 
 const KNOWLEDGE_DIR = path.join(process.cwd(), 'content', 'knowledge')
 
@@ -36,15 +37,12 @@ function normalizeTags(value: unknown): string[] {
   return Array.isArray(value) ? value.map(String) : [String(value)]
 }
 
-/** 读取所有知识条目元数据（同步，不渲染正文） */
+/** 读取所有知识条目元数据（同步，不渲染正文）。递归收集，子目录体现在 slug 里 */
 export function getAllKnowledge(): KnowledgeMeta[] {
   if (!fs.existsSync(KNOWLEDGE_DIR)) return []
 
-  const files = fs.readdirSync(KNOWLEDGE_DIR).filter((f) => f.endsWith('.md'))
-
-  const items = files.map((filename) => {
-    const slug = filename.replace(/\.md$/, '')
-    const raw = fs.readFileSync(path.join(KNOWLEDGE_DIR, filename), 'utf-8')
+  const items = collectMdFiles(KNOWLEDGE_DIR).map(({ slug, filepath }) => {
+    const raw = fs.readFileSync(filepath, 'utf-8')
     const { data } = matter(raw)
 
     return {
@@ -72,8 +70,9 @@ export function getKnowledgeGroupedByDomain(): { domain: string; items: Knowledg
     .sort((a, b) => b.items.length - a.items.length || a.domain.localeCompare(b.domain))
 }
 
-/** 获取单条知识（含渲染后的 HTML） */
+/** 获取单条知识（含渲染后的 HTML）。slug 可含斜杠 */
 export async function getKnowledgeBySlug(slug: string): Promise<Knowledge | null> {
+  if (slug.includes('..')) return null
   const filepath = path.join(KNOWLEDGE_DIR, `${slug}.md`)
   if (!fs.existsSync(filepath)) return null
 

@@ -5,17 +5,18 @@ import ClosingQuote from '@/components/ClosingQuote'
 
 /**
  * 一件正在做的事：/now/<id>
- * 正文就是 content/now/<id>.md 里写的 Markdown，想记什么写什么。
+ * 正文就是 content/now/ 下对应 .md 里写的 Markdown，想记什么写什么。
+ * id 可含子目录层级（content/now/job/hunting.md → /now/job/hunting/）。
  *
  * 静态导出，所以每件都得在这里预先声明路由 —— 加了新文件会自动进来。
  */
 export function generateStaticParams() {
-  return getAllNow().map((item) => ({ id: item.id }))
+  return getAllNow().map((item) => ({ id: item.id.split('/') }))
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ id: string[] }> }) {
   const { id } = await params
-  const item = await getNowById(id)
+  const item = await getNowById(id.join('/'))
   if (!item) return {}
   return {
     title: `${item.title} · 杨苛`,
@@ -23,9 +24,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   }
 }
 
-export default async function NowItemPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function NowItemPage({ params }: { params: Promise<{ id: string[] }> }) {
   const { id } = await params
-  const item = await getNowById(id)
+  const item = await getNowById(id.join('/'))
 
   if (!item) notFound()
 

@@ -4,12 +4,12 @@ import { getAllPosts, getPostBySlug } from '@/lib/posts'
 import ClosingQuote from '@/components/ClosingQuote'
 
 export function generateStaticParams() {
-  return getAllPosts().map((post) => ({ slug: post.slug }))
+  return getAllPosts().map((post) => ({ slug: post.slug.split('/') }))
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string[] }> }) {
   const { slug } = await params
-  const post = await getPostBySlug(slug)
+  const post = await getPostBySlug(slug.join('/'))
   if (!post) return {}
   return {
     title: `${post.title} · 杨苛`,
@@ -17,9 +17,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 }
 
-export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function PostPage({ params }: { params: Promise<{ slug: string[] }> }) {
   const { slug } = await params
-  const post = await getPostBySlug(slug)
+  const post = await getPostBySlug(slug.join('/'))
 
   if (!post) notFound()
 
