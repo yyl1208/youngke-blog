@@ -8,6 +8,7 @@ import remarkRehype from 'remark-rehype'
 import rehypeSlug from 'rehype-slug'
 import rehypeShiki from '@shikijs/rehype'
 import rehypeStringify from 'rehype-stringify'
+import { collectMdFiles } from './md-walk'
 
 const POSTS_DIR = path.join(process.cwd(), 'content', 'posts')
 
@@ -50,16 +51,14 @@ function countWords(md: string): number {
 
 /**
  * 读取所有文章元数据（同步，不渲染正文）。
- * content/posts/ 目录下的每个 .md 就是一篇，没有例外、没有隐藏状态。
+ * content/posts/ 下递归收集每个 .md 就是一篇；子目录体现在 slug 里
+ * （frontend/perf.md → /posts/frontend/perf/），平铺的旧文件 URL 不变。
  */
 export function getAllPosts(): PostMeta[] {
   if (!fs.existsSync(POSTS_DIR)) return []
 
-  const files = fs.readdirSync(POSTS_DIR).filter((f) => f.endsWith('.md'))
-
-  const posts = files.map((filename) => {
-    const slug = filename.replace(/\.md$/, '')
-    const raw = fs.readFileSync(path.join(POSTS_DIR, filename), 'utf-8')
+  const posts = collectMdFiles(POSTS_DIR).map(({ slug, filepath }) => {
+    const raw = fs.readFileSync(filepath, 'utf-8')
     const { data, content } = matter(raw)
     const words = countWords(content)
 
@@ -76,8 +75,9 @@ export function getAllPosts(): PostMeta[] {
   return posts.sort((a, b) => (a.date < b.date ? 1 : -1))
 }
 
-/** 获取单篇文章（含渲染后的 HTML） */
+/** 获取单篇文章（含渲染后的 HTML）。slug 可含斜杠，如 'frontend/perf' */
 export async function getPostBySlug(slug: string): Promise<Post | null> {
+  if (slug.includes('..')) return null
   const filepath = path.join(POSTS_DIR, `${slug}.md`)
   if (!fs.existsSync(filepath)) return null
 

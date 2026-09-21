@@ -4,16 +4,16 @@ import { getAllKnowledge, getKnowledgeBySlug } from '@/lib/knowledge'
 import ClosingQuote from '@/components/ClosingQuote'
 
 export function generateStaticParams() {
-  return getAllKnowledge().map((k) => ({ slug: k.slug }))
+  return getAllKnowledge().map((k) => ({ slug: k.slug.split('/') }))
 }
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>
+  params: Promise<{ slug: string[] }>
 }) {
   const { slug } = await params
-  const k = await getKnowledgeBySlug(slug)
+  const k = await getKnowledgeBySlug(slug.join('/'))
   if (!k) return {}
   return {
     title: `${k.title} · 杨苛`,
@@ -24,10 +24,10 @@ export async function generateMetadata({
 export default async function KnowledgeDetailPage({
   params,
 }: {
-  params: Promise<{ slug: string }>
+  params: Promise<{ slug: string[] }>
 }) {
   const { slug } = await params
-  const k = await getKnowledgeBySlug(slug)
+  const k = await getKnowledgeBySlug(slug.join('/'))
 
   if (!k) notFound()
 
