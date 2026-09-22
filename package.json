@@ -13,7 +13,8 @@
     "typecheck": "tsc --noEmit",
     "new": "node scripts/new.mjs",
     "new:post": "node scripts/new.mjs post",
-    "new:knowledge": "node scripts/new.mjs knowledge"
+    "new:knowledge": "node scripts/new.mjs knowledge",
+    "new:interview": "node scripts/new.mjs interview"
   },
   "dependencies": {
     "@shikijs/rehype": "^4.4.3",

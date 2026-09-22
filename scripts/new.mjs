@@ -4,6 +4,7 @@
  *
  *   npm run new:post "文章标题"        新建 content/posts/<slug>.md
  *   npm run new:knowledge "标题"       新建 content/knowledge/<slug>.md
+ *   npm run new:interview "问题"        新建 content/interview/<slug>.md
  *
  * 为什么要有这个脚本：
  *   手写 frontmatter 容易漏字段或格式写错，日期也懒得敲。
@@ -94,6 +95,35 @@ tags: [踩坑]
 下次怎么避免。
 `
 
+const INTERVIEW_TEMPLATE = (title, date) => `---
+title: ${JSON.stringify(title)}
+domain: 未分类
+date: ${date}
+summary: 一句话概括考点。
+tags: []
+---
+
+## 问题
+
+${title}
+
+## 回答思路
+
+先给结论，再展开原理和适用场景。
+
+## 项目例子
+
+结合实际经历说明。
+
+## 可能的追问
+
+记录边界条件和延伸问题。
+
+## 参考资料
+
+补充原始文档链接。
+`
+
 const [type, ...argv] = process.argv.slice(2)
 const title = argv.filter((a) => !a.startsWith('--')).join(' ')
 
@@ -120,11 +150,23 @@ switch (type) {
     )
     break
 
+  case 'interview':
+    if (!title) {
+      console.error('用法：npm run new:interview "问题"')
+      process.exit(1)
+    }
+    writeIfAbsent(
+      path.join(ROOT, 'content', 'interview', `${toSlug(title)}.md`),
+      INTERVIEW_TEMPLATE(title, today()),
+    )
+    break
+
   default:
     console.log(`youngke blog · 内容 CLI
 
   npm run new:post "文章标题"      新建文章
   npm run new:knowledge "标题"     新建知识条目
+  npm run new:interview "问题"     新建面试题
 
 内容直接写进 content/ 下的 .md 文件，提交推送即发布。
 手机上可直接在 GitHub 网页端新建文件，效果一样。`)

@@ -779,6 +779,7 @@ body::before {
 
 .footer-links {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--sp-4);
 }
 
@@ -1948,6 +1949,7 @@ div.contact-card:hover {
 
   /* 搜索框吃掉剩余空间，不再写死宽度 */
   .search {
+    min-width: 0;
     max-width: none;
   }
 
