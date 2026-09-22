@@ -21,11 +21,10 @@
 
 没有数据库、没有后端、没有账号系统 —— `content/` 目录下的 Markdown 就是全部数据源。
 
-它包含三个独立的内容板块：
+它同时是两样东西：
 
 - **博客** —— 想清楚才写的长文
 - **知识库** —— 项目里踩过的坑，按领域归档，方便下次直接搜到
-- **面试题** —— 按主题整理问题和回答思路，入口在页脚末尾
 
 ## 特性
 
@@ -75,11 +74,10 @@ python3 -m http.server 4173 --directory out
 content/
 ├── posts/        文章，一篇一个文件，文件名即 URL
 ├── knowledge/    知识条目，按领域分组展示
-├── interview/    面试题，按领域分组展示
 └── now/          「现在在做的事」，一个文件一件事
 ```
 
-**四个目录都支持子目录归类**：`content/knowledge/Java/redis.md` → `/knowledge/Java/redis/`，用来把同类内容收在一起，URL 也跟着分层。平铺的文件不受影响，旧链接不变。
+**三个目录都支持子目录归类**：`content/knowledge/Java/redis.md` → `/knowledge/Java/redis/`，用来把同类内容收在一起，URL 也跟着分层。平铺的文件不受影响，旧链接不变。
 
 三种发文方式，按场景选：
 
@@ -88,7 +86,6 @@ content/
 ```bash
 npm run new:post "Vite 插件的 resolveId 踩坑"   # → content/posts/vite-插件的-resolveid-踩坑.md
 npm run new:knowledge "Turf 几何校验"           # → content/knowledge/turf-几何校验.md
-npm run new:interview "如何排查页面卡顿"       # → content/interview/如何排查页面卡顿.md
 ```
 
 生成的文件已带好 frontmatter 骨架（标题、日期自动填），打开写正文即可。
@@ -126,12 +123,6 @@ const a = 1
 
 阅读时长按中英混排 300 字/分钟自动计算，不需要手填。
 
-**面试题内容**
-
-在 `content/interview/` 新建 `.md` 即可，也可以按主题建立子目录，例如 `frontend/rendering.md` 对应 `/interview/frontend/rendering/`。用 `domain` 控制列表分组；`title`、`date`、`summary`、`tags` 分别表示标题、更新日期、摘要和标签。列表按日期倒序显示，正文支持代码高亮、表格和任务列表。
-
-可通过 `npm run new:interview "问题标题"` 生成包含问题、回答思路、项目例子和追问的模板。面试题独立于文章和知识库，入口只放在页脚末尾，不混入首页动态、全站搜索、文章归档或 RSS。
-
 **发布**
 
 ```bash
@@ -152,8 +143,6 @@ GitHub Pages 是**手动触发的备份**：`.github/workflows/deploy.yml` 用�
 | `/posts` | 文章 | `content/posts/` |
 | `/posts/[slug]` | 文章详情 | 同上，构建时渲染 |
 | `/knowledge` | 知识库 | `content/knowledge/`，按 `domain` 分组 |
-| `/interview` | 面试题 | `content/interview/`，按 `domain` 分组；入口只在页脚 |
-| `/interview/[...slug]` | 面试题详情 | 同上，支持子目录，构建时渲染 |
 | `/journey` | 经历 | `lib/journey.ts`，手写结构化数据 |
 | `/archive` | 归档 | 按年份 + 标签两个维度索引全部文章 |
 | `/about` | 关于 | `app/about/page.tsx` 内联 |
