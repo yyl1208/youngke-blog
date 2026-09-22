@@ -121,6 +121,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <a href={`mailto:${site.email}`}>email</a>
               <a href={`${basePath}/rss.xml`}>rss</a>
               <Link href="/changelog/">更新日志</Link>
+              <Link href="/interview/">面试题</Link>
             </div>
           </footer>
         </div>
