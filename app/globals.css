@@ -2022,3 +2022,33 @@ div.contact-card:hover {
   color: var(--fg-3);
   font-size: 0.8125rem;
 }
+
+/* 文章标签筛选 */
+.post-tag-filter {
+  margin-bottom: var(--sp-6);
+}
+
+.post-tag-filter button.tag-chip {
+  font-family: inherit;
+  background: transparent;
+  cursor: pointer;
+  min-height: 36px;
+}
+
+.post-tag-filter button.tag-chip:hover,
+.post-tag-filter button.tag-chip[aria-pressed="true"] {
+  color: var(--inverse-fg);
+  background: var(--inverse-bg);
+  border-color: var(--inverse-bg);
+}
+
+.post-tag-filter button.tag-chip:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 3px;
+}
+
+.post-filter-status {
+  font-size: var(--fs-xs);
+  color: var(--fg-2);
+  margin-bottom: var(--sp-6);
+}
