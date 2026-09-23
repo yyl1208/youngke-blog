@@ -1,5 +1,5 @@
-import Link from 'next/link'
-import { getAllPosts, getAllTags, getPostsGroupedByYear } from '@/lib/posts'
+import PostTagFilter from '@/components/PostTagFilter'
+import { getAllPosts } from '@/lib/posts'
 
 export const metadata = {
   title: '文章 · 杨苛',
@@ -7,9 +7,16 @@ export const metadata = {
 }
 
 export default function PostsPage() {
-  const groups = getPostsGroupedByYear()
-  const tags = getAllTags()
-  const total = getAllPosts().length
+  const posts = getAllPosts().map(({ slug, title, date, tags }) => ({
+    slug, title, date, tags: [...new Set(tags)],
+  }))
+  const counts = new Map<string, number>()
+  for (const post of posts) {
+    for (const tag of post.tags) counts.set(tag, (counts.get(tag) ?? 0) + 1)
+  }
+  const tags = [...counts].map(([tag, count]) => ({ tag, count }))
+    .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag))
+  const total = posts.length
 
   return (
     <>
@@ -24,40 +31,7 @@ export default function PostsPage() {
         </div>
       </header>
 
-      {groups.map((group) => (
-        <section className="year-group" key={group.year}>
-          <div className="year-label tnum">{group.year}</div>
-          <ul className="row-list">
-            {group.posts.map((post) => (
-              <li className="row-item" key={post.slug}>
-                <Link href={`/posts/${post.slug}/`} className="row-link">
-                  <span className="row-date tnum">
-                    {post.date.slice(5).replace('-', '/')}
-                  </span>
-                  <span className="row-title">{post.title}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))}
-
-      {tags.length > 0 && (
-        <section className="section">
-          <div className="section-head">
-            <span className="section-num">—</span>
-            <span className="section-title">Tags</span>
-            <span className="section-title-zh">标签</span>
-          </div>
-          <div className="tag-cloud">
-            {tags.map(({ tag, count }) => (
-              <span key={tag} className="tag-chip">
-                {tag} <span className="tnum">{count}</span>
-              </span>
-            ))}
-          </div>
-        </section>
-      )}
+      <PostTagFilter posts={posts} tags={tags} />
     </>
   )
 }
