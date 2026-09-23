@@ -1,7 +1,7 @@
 ---
 title: 前端性能优化全景：从 Performance 定位到场景化方案
 date: 2026-09-21
-tags: [前端性能, Performance, 面试]
+tags: [前端相关, 前端性能, 面试]
 summary: 我遇到过的性能场景归成四类，Performance 面板怎么按顺序看，以及每类场景下证据、方案、代价的对应关系。
 ---
 
